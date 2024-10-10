@@ -1,0 +1,43 @@
+package cardSaga;
+
+import java.util.List;
+
+public class Player extends Entity {
+
+    Inventory inventory;
+    int hp;
+    int level;
+
+    public Player(String entityType) {
+        super(entityType);
+        this.inventory = new Inventory(entityType, 1, 10);
+        this.hp = 1;
+        this.level = 0;
+    }
+    
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public List<Card> getCards() {
+        return inventory.cards;
+    }
+
+    public void viewInventory() {
+        int i = 0;
+
+        System.out.println("\n\tCurrent Card List:");
+        for (var card : inventory.cards) {
+            System.out.println(String.format("\t[Card %d] %s (dmg: %d) -- %s", ++i, card.name, card.dmg, card.trait.getDesc()));
+        }
+
+        System.out.println("\n\tOther Items:");
+        System.out.println("\tGold: " + inventory.gold);
+        System.out.println("\tUpgrade Cards: " + inventory.numUpgdCards);
+        System.out.println("\tHealth: " + hp);
+        System.out.println("\tLevel -" + level + "-\n");
+
+    }
+
+}
+

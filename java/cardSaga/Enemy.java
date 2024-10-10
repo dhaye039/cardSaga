@@ -1,0 +1,40 @@
+package cardSaga;
+import java.util.*;
+
+public class Enemy extends Entity {
+    List<Card> cards = new ArrayList<>();
+    int gold;
+
+    public Enemy(String entityType, int gold) {
+        super(entityType);
+        this.gold = gold;
+        initCards();
+    }
+
+    private void initCards() {
+        switch (entityType) {
+            case "goblin":
+                cards.add(masterList.lookup("Knife"));
+                cards.add(masterList.lookup("Rob"));
+                cards.add(masterList.lookup("Steal"));
+                // cards.add(masterList.lookup("Weakness Potion"));
+                break;
+            case "slime":
+                break;
+            case "ogre":
+                break;
+        }
+
+        // for (var card : cards) {
+        //     System.out.println(card.name);
+        // }
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    public void addCard(Card c) {
+        cards.add(c);
+    }
+}
