@@ -14,22 +14,6 @@ public class Effect {
         this.mod = mod;
     }
 
-    // // applies card effect to fight/card
-    // public boolean apply() {
-    //     // if (affectOpp) {
-
-    //     // } else {
-    //     Trait t = card.getTrait();
-    //     if (t instanceof WeaponTrait) {
-    //         card.incDmg(((WeaponTrait)t).getMod());
-    //     } else if (t instanceof StealCon) {
-            
-    //     }
-
-    //     return false;
-    //     // }
-    // }
-
     public Card getCard() {
         return card;
     }

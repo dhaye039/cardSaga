@@ -28,14 +28,14 @@ public class Player extends Entity {
 
         System.out.println("\n\tCurrent Card List:");
         for (var card : inventory.cards) {
-            System.out.println(String.format("\t[Card %d] %s (dmg: %d) -- %s", ++i, card.name, card.dmg, card.trait.getDesc()));
+            System.out.println(String.format("\t  [Card %d] %s (dmg: %d) -- %s", ++i, card.name, card.dmg, card.trait.getDesc()));
         }
 
         System.out.println("\n\tOther Items:");
-        System.out.println("\tGold: " + inventory.gold);
-        System.out.println("\tUpgrade Cards: " + inventory.numUpgdCards);
-        System.out.println("\tHealth: " + hp);
-        System.out.println("\tLevel -" + level + "-\n");
+        System.out.println("\t  Gold: " + inventory.gold);
+        System.out.println("\t  Upgrade Cards: " + inventory.numUpgdCards);
+        System.out.println("\t  Health: " + hp);
+        System.out.println("\t  Level -" + level + "-\n");
 
     }
 
