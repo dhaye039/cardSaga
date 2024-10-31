@@ -2,7 +2,7 @@ package cardSaga;
 
 // lwk forget what 'Con' is but i think its for consequence
 
-class KnifeCon extends NonUpgdable {
+class EnemyWeaponTrait extends NonUpgdable {
     
     @Override
     public String getDesc() {
@@ -14,7 +14,7 @@ class StealCon extends NonUpgdable {
 
     @Override
     public String getDesc() {
-        return "Deletes the last card you used";
+        return "Deletes the last card the opposing player used";
     }
 }
 
@@ -27,7 +27,7 @@ class RobCon extends Upgdable {
 
     @Override
     public String getDesc() {
-        return "You lose " + mod + " additional gold (does not go negative)";
+        return "Opposing player loses " + mod + " additional gold (does not go negative)";
     }
 }
 

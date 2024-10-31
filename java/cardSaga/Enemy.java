@@ -14,7 +14,7 @@ public class Enemy extends Entity {
     private void initCards() {
         switch (entityType) {
             case "goblin":
-                cards.add(masterList.lookup("Knife"));
+                // cards.add(masterList.lookup("Knife"));
                 cards.add(masterList.lookup("Rob"));
                 cards.add(masterList.lookup("Steal"));
                 // cards.add(masterList.lookup("Weakness Potion"));

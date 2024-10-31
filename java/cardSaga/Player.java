@@ -25,10 +25,14 @@ public class Player extends Entity {
 
     public void viewInventory() {
         int i = 0;
+        String borrowedUses = "";
 
         System.out.println("\n\tCurrent Card List:");
         for (var card : inventory.cards) {
-            System.out.println(String.format("\t  [Card %d] %s (dmg: %d) -- %s", ++i, card.name, card.dmg, card.trait.getDesc()));
+            if (card.isBorrowed) {
+                borrowedUses = " [" + card.numUses + " uses left]";
+            }
+            System.out.println(String.format("\t  [Card %d] %s (dmg: %d) -- %s%s", ++i, card.name, card.dmg, card.trait.getDesc(), borrowedUses));
         }
 
         System.out.println("\n\tOther Items:");

@@ -1,19 +1,20 @@
 package cardSaga;
 
-// import java.util.*;
-
 public class Card {
 
-    String name;
-    Type type;
-    int dmg;
-    Trait trait;
-    boolean reroll;
-    float prob;
-    int cost;
-    Effect effect;
+    String name;        // Name of card
+    Type type;          // Type of card
+    int dmg;            // Damage the card adds to attack
+    Trait trait;        // The trait refers to what the card actuallt does
+    boolean reroll;     // If the card causes the owner to reroll
+    float prob;         // The probability this card gets drawn
+    int cost;           // How much gold the card costs (for shop)
+    boolean affectOpp;  // If the card affects the opposing player
+    boolean isBorrowed; // If the card is currently being borrowed
+    int numUses;        // how many times the card can be used
 
-    public Card(String name, Type type, int dmg, Trait trait, boolean reroll, float prob, int cost) {
+
+    public Card(String name, Type type, int dmg, Trait trait, boolean reroll, float prob, int cost, boolean affectOpp) {
         this.name = name;
         this.type = type;
         this.dmg = dmg;
@@ -21,55 +22,10 @@ public class Card {
         this.reroll = reroll;
         this.prob = prob;
         this.cost = cost;
-        this.effect = getStats();
+        this.affectOpp = affectOpp;
+        this.isBorrowed = false;
+        this.numUses = 0;
     }
-
-    public Effect getStats() {
-        boolean affectOpp = false;
-        String effect = "none";
-        int mod = 0;
-
-        if (trait instanceof WeaponTrait) {
-            affectOpp = false;
-            effect = "dmg";
-            mod = dmg;
-        } else if (trait instanceof SheildTrait) {
-            affectOpp = false;
-            effect = "dmg";
-            mod = dmg;
-        } else if (trait instanceof StrengthTrait) {
-            affectOpp = false;
-            effect = "reroll";
-            mod = dmg;
-        } else if (trait instanceof WeaknessTrait) {
-            affectOpp = true;
-            effect = "dmg";
-            mod = ((WeaknessTrait) trait).getMod();
-        } 
-        
-        // Cons
-        else if (trait instanceof RobCon) {
-            affectOpp = false;
-            effect = "rob";
-            mod = dmg;
-        } else if (trait instanceof StealCon) {
-            affectOpp = false;
-            effect = "steal";
-            mod = dmg;
-        }
-
-        // TODO: more Traits/cons
-
-        return new Effect(this, affectOpp, reroll, effect, mod);
-    }
-
-    // increases the dmg for weapon types (uses card modifications/traits)
-    // public void use(int Totdmg) {
-    //     // System.out.println(String.format("\n\t+%d dmg - %s: %s [%d dmg]\n", dmg, name, trait.getDesc(), Totdmg));
-    //     if (trait instanceof WeaponTrait) {
-    //         dmg = dmg + ((WeaponTrait)trait).getMod();
-    //     } // TODO: else if etc etc
-    // }
 
     public String getName() {
         return name;
@@ -78,6 +34,7 @@ public class Card {
         return type;
     }
 
+    // TODO: Damage incrementer/decrementer Traits
     public int getDmg() {
         if (trait instanceof StrengthTrait
          || trait instanceof SmokeArrowTrait
@@ -126,7 +83,16 @@ public class Card {
         this.cost = cost;
     }
 
-    public Effect getEffect() {
-        return effect;
+    public boolean isAffectOpp() {
+        return affectOpp;
+    }
+
+    public boolean isBorrowed() {
+        return isBorrowed;
+    }
+
+    public void setBorrowed(boolean isBorrowed, int numUses) {
+        this.isBorrowed = isBorrowed;
+        this.numUses = numUses;
     }
 }

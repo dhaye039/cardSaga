@@ -1,6 +1,8 @@
 package cardSaga;
 
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class MasterList {
     private static MasterList instance = new MasterList();
@@ -20,32 +22,32 @@ public class MasterList {
 
     public void initMasterList() {
         // Knight Starting Cards
-        masterList.add(new Card("Sword", Type.WEAPON, 5, new WeaponTrait(1, 2), false, 40, 5));
-        masterList.add(new Card("Sheild", Type.ACCESSORY, 4, new SheildTrait(), false, 40, 7));
-        masterList.add(new Card("Strength Potion", Type.POTION, 3, new StrengthTrait(3, 3), true, 20, 7));
+        masterList.add(new Card("Sword", Type.WEAPON, 5, new WeaponTrait(1, 2), false, 40, 5, false));
+        masterList.add(new Card("Sheild", Type.ACCESSORY, 4, new SheildTrait(), false, 40, 7, false));
+        masterList.add(new Card("Strength Potion", Type.POTION, 3, new StrengthTrait(3, 3), true, 20, 7, false));
 
         // Wizard Starting Cards
-        masterList.add(new Card("Fireball", Type.WEAPON, 6, new WeaponTrait(1, 2), false, 27, 5));
-        masterList.add(new Card("Magic Mirror", Type.UTILITY, 4, new MagicMirrorTrait(1, 2), false, 27, 5));
-        masterList.add(new Card("Confusion Potion", Type.POTION, 5, new ConfusionTrait(), false, 27, 5));
-        masterList.add(new Card("Weakness Potion", Type.POTION, 0, new WeaknessTrait(1, 2), true, 19, 5));
+        masterList.add(new Card("Fireball", Type.WEAPON, 6, new WeaponTrait(1, 2), false, 27, 5, false));
+        masterList.add(new Card("Magic Mirror", Type.UTILITY, 40, new MagicMirrorTrait(1, 2), false, 27, 5, false));
+        masterList.add(new Card("Confusion Potion", Type.POTION, 5, new ConfusionTrait(), false, 27, 5, false));
+        masterList.add(new Card("Weakness Potion", Type.POTION, 0, new WeaknessTrait(1, 2), true, 19, 5, false));
 
         // Ranger Starting Cards
-        masterList.add(new Card("Bow", Type.WEAPON, 3, new WeaponTrait(1, 2), false, 27, 5));
-        masterList.add(new Card("Bomb", Type.UTILITY, 8, new BombTrait(2, 2), false, 27, 7));
-        masterList.add(new Card("Smoke Arrow", Type.UTILITY, 2, new SmokeArrowTrait(2, 2), true, 27, 7));
-        masterList.add(new Card("Luck Potion", Type.POTION, 0, new LuckTrait(5, 2), true, 19, 5));
+        masterList.add(new Card("Bow", Type.WEAPON, 3, new WeaponTrait(1, 2), false, 27, 5, false));
+        masterList.add(new Card("Bomb", Type.UTILITY, 8, new BombTrait(2, 2), false, 27, 7, false));
+        masterList.add(new Card("Smoke Arrow", Type.UTILITY, 2, new SmokeArrowTrait(2, 2), true, 27, 7, false));
+        masterList.add(new Card("Luck Potion", Type.POTION, 0, new LuckTrait(5, 2), true, 19, 5, false));
 
         // Rogue Starting Cards
-        masterList.add(new Card("Dagger", Type.WEAPON, 4, new WeaponTrait(1, 2), false, 40, 5));
-        masterList.add(new Card("Cloak", Type.ACCESSORY, 4, new CloakTrait(), false, 40, 7));
-        masterList.add(new Card("Crit Potion", Type.POTION, 0, new CritTrait(), true, 20, 5));
+        masterList.add(new Card("Dagger", Type.WEAPON, 4, new WeaponTrait(1, 2), false, 40, 5, false));
+        masterList.add(new Card("Cloak", Type.ACCESSORY, 4, new CloakTrait(), false, 40, 7, false));
+        masterList.add(new Card("Crit Potion", Type.POTION, 0, new CritTrait(), true, 20, 5, false));
 
         // Enemy Cards
         // Goblin
-        masterList.add(new Card("Knife", Type.ENEMY, 6, new KnifeCon(), false, 40, 5));
-        masterList.add(new Card("Rob", Type.ENEMY, 8, new RobCon(3, 2), false, 40, 5)); // RobCon(1, 2)* probably but check this later
-        masterList.add(new Card("Steal", Type.ENEMY, 4, new StealCon(), false, 20, 5));
+        masterList.add(new Card("Knife", Type.ENEMY, 6, new EnemyWeaponTrait(), false, 40, 5, false));
+        masterList.add(new Card("Rob", Type.ENEMY, 8, new RobCon(3, 2), false, 40, 5, false)); // RobCon(1, 2)* probably but check this later
+        masterList.add(new Card("Steal", Type.ENEMY, 4, new StealCon(), false, 20, 5, false));
 
 
         // Other Cards
@@ -80,7 +82,7 @@ public class MasterList {
         for (var card : masterList) {
             if (card.name.equals(name)) {
                 Trait cardTrait = createTraitInstance(card.trait);
-                return new Card(card.name, card.type, card.dmg, cardTrait, card.reroll, card.prob, card.cost);
+                return new Card(card.name, card.type, card.dmg, cardTrait, card.reroll, card.prob, card.cost, card.affectOpp);
             }
         }
         return null;
@@ -122,8 +124,8 @@ public class MasterList {
         } 
         
         // Enemy Traits
-        else if (trait instanceof KnifeCon) {
-            return new KnifeCon();
+        else if (trait instanceof EnemyWeaponTrait) {
+            return new EnemyWeaponTrait();
         } else if (trait instanceof StealCon) {
             return new StealCon();
         } else if (trait instanceof RobCon) {

@@ -32,7 +32,7 @@ public class Main {
                     System.out.println("\n");
                     
                     if (hasCards && canPlay) {  
-                        Enemy e = new Enemy("goblin", 10);
+                        Enemy e = new Enemy("goblin", 5);
                         new Fight(p, e, turn).startFight();
                     } else {
                         System.out.println("\n\tYou do not have sufficient cards to fight.\n");

@@ -62,7 +62,7 @@ class MagicMirrorTrait extends Upgdable {
 
     @Override
     public String getDesc() {
-        return "copy enemy's card (" + mod + " use)";
+        return "copy a random card from enemy (" + mod + " use)";
     }
 }
 

@@ -9,9 +9,9 @@ public class Fight {
     private Card pCard, eCard;
     private Random rand = new Random();
     private boolean pImmune = false;
-    private boolean pHasCrit, eHasCrit, pUsedCrit, eUsedCrit;
+    private boolean pUsedCrit, eUsedCrit, useDodge, pSteal, eSteal;
     private int bombLost = -3;
-    private int turn;
+    private int turn, numUses;
 
     public Fight(Player player, Enemy enemy, int turn) {
         this.p = player;
@@ -25,20 +25,9 @@ public class Fight {
         int pTotDmg = 0;
         int eTotDmg = 0;
         boolean reroll = false;
-        pHasCrit = false;
-        eHasCrit = false;
         pUsedCrit = false;
         eUsedCrit = false;
-
-        for (Card c : p.getCards()) {
-            if (c.name.equals("Crit Potion")) {
-                pHasCrit = true;
-            }
-        }
-
-        for (Card c : e.getCards()) {
-            
-        }
+        useDodge = false;
 
         if (p.entityType.equals("ranger")) {
             System.out.println("turn: " + turn + " bombLost: " + bombLost);
@@ -47,22 +36,32 @@ public class Fight {
             }
         }
 
-        // for (Card card : cards) {
-        //     if (card.name.equals("Crit Potion")) {
-        //         hasCrit = true;
-        //     }
-        // }
-
         while (true) {
             String pTurn = "";
             String eTurn = "";
             pImmune = false;
+            pSteal = false;
+            eSteal = false;
 
             // Player's turn
             System.out.println("Player's drawings:");
             do {
-                pCard = spinWheel(p.getCards());
-                if (pCard.effect.affectOpp) {
+                do { 
+                    pCard = spinWheel(p.getCards());
+                } while (
+                    pCard.name.equals("Crit Potion") && pUsedCrit == true
+                );
+
+                if (pCard.name.equals("Crit Potion")) { pUsedCrit = true; }
+                
+                if (pCard.isBorrowed) {
+                    --pCard.numUses;
+                    if (pCard.numUses == 0) {
+                        p.inventory.remove(pCard);
+                    }
+                }
+
+                if (pCard.affectOpp) {
                     eTotDmg = calcDmg(pCard, eTotDmg);
                 } else {
                     pTotDmg = calcDmg(pCard, pTotDmg);
@@ -78,8 +77,15 @@ public class Fight {
             // Enemy's turn
             System.out.println("Enemy's drawings:");
             do {
-                eCard = spinWheel(e.getCards());
-                if (eCard.effect.affectOpp) {
+                do { 
+                    eCard = spinWheel(e.getCards());
+                } while (
+                    eCard.name.equals("Crit Potion") && eUsedCrit == true
+                );
+
+                if (eCard.name.equals("Crit Potion")) { eUsedCrit = true; }
+
+                if (eCard.affectOpp) {
                     pTotDmg = calcDmg(eCard, pTotDmg);
                 } else {
                     eTotDmg = calcDmg(eCard, eTotDmg);
@@ -89,23 +95,46 @@ public class Fight {
             } while (reroll);
             System.out.println(eTurn + "\n");
 
+            // Calculate winner
             if (pUsedCrit) pTotDmg *= 2;
             else if (eUsedCrit) eTotDmg *= 2;
 
-            // print outcome
+            // Print outcome
             System.out.println(String.format("\tFinal Totals:\n\tPlayer [%s] | Enemy [%s]", pTotDmg, eTotDmg));
+
             // Compare total damages
-            if (pTotDmg > eTotDmg) {
+            if (pTotDmg > eTotDmg) { // player wins
                 System.out.println("\tPlayer wins! Enemy dropped " + e.gold + " gold\n");
+
+                if (pSteal) {
+                    Card c = spinWheel(e.getCards());
+                    c.setBorrowed(true, numUses);
+                    System.out.println(c.numUses);
+                    p.getCards().add(c);
+                }
+
+                if (rand.nextInt(100) == 50) {
+                    p.inventory.incnumUpgdCards();
+                    System.out.println("Enemy dropped an upgrade card!");
+                }
+
                 p.inventory.addGold(e.gold);
                 break;
-            } else if (eTotDmg > pTotDmg) {
+            } else if (eTotDmg > pTotDmg) { // enemy wins
                 System.out.println("\tEnemy wins.\n");
-                if (!(eCard.getTrait() instanceof WeaponTrait) && pImmune != true)
+
+                if (useDodge) {
+                    pImmune = isDodging();
+                    useDodge = false;
+                    System.out.print("\n");
+                }
+
+                if (!(eCard.getTrait() instanceof WeaponTrait) && pImmune != true) {
                     apply(eCard);
-                if (p.inventory.addGold(-3) < 0) p.inventory.setGold(0); // -3 gold for losing
+                    if (p.inventory.addGold(-3) < 0) p.inventory.setGold(0); // -3 gold for losing
+                }
                 break;
-            } else {
+            } else { // tie
                 System.out.println("\nIt's a tie! Restarting fight...\n");
                 // Reset total damages for a tie
                 pTotDmg = 0;
@@ -143,7 +172,6 @@ public class Fight {
     }
 
     private int calcDmg(Card card, int TotDmg) {
-        Effect e = card.getEffect();
         int newDmg = 0;
 
         Trait t = card.trait;
@@ -165,7 +193,7 @@ public class Fight {
         * Implement logic for applying card effects
         */ 
 
-        return newDmg = (e.affectOpp) ? newDmg * -1 : newDmg;
+        return newDmg = (card.affectOpp) ? newDmg * -1 : newDmg;
     }
 
     /**
@@ -181,7 +209,8 @@ public class Fight {
         } else if (t instanceof SheildTrait) {
             pImmune = true;
         } else if (t instanceof MagicMirrorTrait) {
-
+            pSteal = true;
+            numUses = ((MagicMirrorTrait)t).mod;
         } else if (t instanceof ConfusionTrait) {
             // reroll(e);
         } else if (t instanceof BombTrait) {
@@ -191,6 +220,8 @@ public class Fight {
             c.prob = c.prob * (float) 1.05;
         } else if (t instanceof CritTrait) {
             p.inventory.remove(c); // gets added back next turn
+        } else if (t instanceof CloakTrait) {
+            useDodge = true;
         }
         
         // Consequences
@@ -199,5 +230,15 @@ public class Fight {
         } else if (t instanceof RobCon) {
             if (p.inventory.addGold(-3) < 0) p.inventory.setGold(0);
         }
+    }
+
+    @SuppressWarnings("resource")
+    private boolean isDodging() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Would you like to dodge this fight? (y/n): ");
+        if (scanner.nextLine().startsWith("y")) 
+            return true;
+        else 
+            return false;
     }
 }

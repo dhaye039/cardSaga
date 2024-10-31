@@ -29,10 +29,10 @@ public class Inventory {
                 cards.add(masterList.lookup("Strength Potion"));
                 break;
             case "wizard":
-                cards.add(masterList.lookup("Fireball"));
+                // cards.add(masterList.lookup("Fireball"));
                 cards.add(masterList.lookup("Magic Mirror"));
-                cards.add(masterList.lookup("Confusion Potion"));
-                cards.add(masterList.lookup("Weakness Potion"));
+                // cards.add(masterList.lookup("Confusion Potion"));
+                // cards.add(masterList.lookup("Weakness Potion"));
                 break;
             case "ranger":
                 cards.add(masterList.lookup("Bow"));
@@ -100,6 +100,10 @@ public class Inventory {
 
     public void setnumUpgdCards(int numUpgdCards) {
         this.numUpgdCards = numUpgdCards;
+    }
+
+    public void incnumUpgdCards() {
+        ++numUpgdCards;
     }
 
     public void decnumUpgdCards() {
