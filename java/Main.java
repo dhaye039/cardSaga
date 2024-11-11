@@ -8,6 +8,7 @@ public class Main {
     static Random rand = new Random();
     static MasterList MasterList = cardSaga.MasterList.getInstance(); 
     static Board board = cardSaga.Board.getInstance();
+    static MazeGame game = new MazeGame(10, 10);
     static boolean cardsInShop = true;
 
 
@@ -23,8 +24,9 @@ public class Main {
         // Game loop
         while (!gameover && numTurn != 100) {
             System.out.println("\t\t\t\t\t    Turn " + turn + "\n");
+            // board.displayBoard();
             System.out.println("Current Options: ");
-            System.out.println("[D]ie | [F]ight | Check [I]nventory | [R]oll | Visit the [S]hop | [U]pgrade Card | Spin [W]heel\n");
+            System.out.println("[D]ie | [F]ight | Check [I]nventory | [R]oll | Visit the [S]hop | [U]pgrade Card | Go [N]orth, [E]ast, [S]outh, or [W]est\n");
             switch (procTurn()) {
                 case "f":
                     List<Card> pCards = p.getCards();
@@ -43,10 +45,13 @@ public class Main {
                 case "i":
                     p.viewInventory();
                     break;
-                case "r":                    
-                    System.out.println("\n\tYou rolled a " + (rand.nextInt(6) + 1) + ".\n");
+                case "r":  
+                    int rollNum = 0;
+                    rollNum = (rand.nextInt(6) + 1);               
+                    System.out.println("\n\tYou rolled a " + rollNum + ".\n");
                     MasterList.populateShop();
                     cardsInShop = true;
+                    roll(rollNum);
                     break;
                 case "s":
                     if (cardsInShop)
@@ -60,13 +65,15 @@ public class Main {
                     else 
                         upgdCard(p);
                     break;
-                case "w":
-                    spin(p);
-                    break;
+                // case "w":
+                //     spin(p);
+                //     break;
                 case "d":
                     System.out.println();
                     gameover = true;
                     break;
+                default:
+                    System.out.println("Not implemented yet.");
             }
 
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
@@ -111,7 +118,7 @@ public class Main {
             , "r"   // roll
             , "s"   // shop
             , "u"   // upgrade
-            , "w"   // wheel
+            // , "w"   // wheel
         ));
 
         // board.displayBoard();
@@ -233,6 +240,34 @@ public class Main {
         }
     }
       
+    private static void roll(int diceRoll) {
+        String dir;
+
+        List<String> dirOptions = new ArrayList<>(Arrays.asList(
+            "n", "e", "s", "w"
+        ));
+
+        game.displayMaze(); 
+
+        while (diceRoll != 0) {
+            System.out.print("Enter a Direction (Up [w], down [s], left [a], right [d]): ");
+            dir = scanner.nextLine().toLowerCase();
+            while(!dirOptions.contains(dir)) {
+                System.out.print("Please enter a valid a direction (w, s, a, d): ");
+                dir = scanner.nextLine().toLowerCase();
+            }
+
+            if (game.movePlayer(dir, diceRoll))
+                --diceRoll;
+            else
+                System.out.println("Invalid move!");
+            
+            game.displayMaze();
+        }
+        
+        
+    }
+    
     private static int spin(Player player) {
         int totalProb = 0;
         int inc = 0;
