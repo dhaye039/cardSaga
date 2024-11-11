@@ -8,12 +8,14 @@ public class Player extends Entity {
     Inventory inventory;
     int hp;
     int level;
+    int xp;
 
     public Player(String entityType) {
         super(entityType);
         this.inventory = new Inventory(entityType, 1, 10);
         this.hp = 1;
         this.level = 0;
+        this.xp = 3;
     }
     
     public Inventory getInventory() {
@@ -40,9 +42,18 @@ public class Player extends Entity {
         System.out.println("\t  Gold: " + inventory.gold);
         System.out.println("\t  Upgrade Cards: " + inventory.numUpgdCards);
         System.out.println("\t  Health: " + hp);
-        System.out.println("\t  Level -" + level + "-\n");
-
+        System.out.println("\t  xp -" + xp + "-");
+        System.out.println("\t  Level -" + calcLevel() + "-\n");
+        
     }
 
+    public int calcLevel() {
+        int level = (int) Math.sqrt(xp) - 1;
+        return Math.max(0, level);
+    }
+
+    public void incXP(int xp) {
+        this.xp += xp;
+    }
 }
 

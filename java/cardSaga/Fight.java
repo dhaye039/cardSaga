@@ -18,7 +18,7 @@ class FightTrait {
 
     void reset(boolean... flags) {
         for (int i = 0; i < flags.length; i++) {
-            flags[i] = false;  // Sets each element in the array to false
+            flags[i] = false;
         }
     }
 }
@@ -143,6 +143,7 @@ public class Fight {
                     System.out.println("Enemy dropped an upgrade card!");
                 }
 
+                p.incXP(1);
                 p.inventory.addGold(e.gold);
             } else if (eTotDmg > pTotDmg) { // enemy wins
                 System.out.println("\tEnemy wins.\n");

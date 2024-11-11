@@ -14,7 +14,7 @@ public class BombTrait extends Upgradable {
 
     @Override
     public String getDesc() {
-        return "explodes after use (restores in " + mod + " turns)";
+        return "explodes after use (restores every " + mod + " turn(s)";
     }
 
     @Override
