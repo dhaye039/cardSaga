@@ -22,6 +22,7 @@ public class Main {
 
         // Game loop
         while (!gameover && numTurn != 100) {
+            System.out.println("\t\t\t\t\t    Turn " + turn + "\n");
             System.out.println("Current Options: ");
             System.out.println("[D]ie | [F]ight | Check [I]nventory | [R]oll | Visit the [S]hop | [U]pgrade Card | Spin [W]heel\n");
             switch (procTurn()) {
@@ -63,9 +64,13 @@ public class Main {
                     spin(p);
                     break;
                 case "d":
+                    System.out.println();
                     gameover = true;
                     break;
             }
+
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
 
             numTurn++;
             // gameover = true;
@@ -76,12 +81,12 @@ public class Main {
 
     private static Player startGame() {
         String playerType;
-        List<String> playerTypes = new ArrayList<>(Arrays.asList("knight", "wizard", "ranger", "rogue"));
+        List<String> playerTypes = new ArrayList<>(Arrays.asList("knight", "wizard", "archer", "rogue"));
 
         String classAvailibility = """
 
         Available Classes: 
-        Knight | Wizard | Ranger | Rogue 
+        Knight | Wizard | Archer | Rogue 
 
         """;
         System.out.print(classAvailibility + "Enter a Class: ");
@@ -91,6 +96,7 @@ public class Main {
             playerType = scanner.nextLine();
         }
         System.out.println();
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Welcome to Card Saga~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         Player p = new Player(playerType);
         return p;

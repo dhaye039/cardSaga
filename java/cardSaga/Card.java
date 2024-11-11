@@ -1,5 +1,13 @@
 package cardSaga;
 
+import cardSaga.traits.*;
+// import cardSaga.traits.weapons.*;
+import cardSaga.traits.utilities.*;
+import cardSaga.traits.potions.*;
+// import cardSaga.traits.accessories.*;
+// import cardSaga.traits.armor.*;
+// import cardSaga.traits.consequences.*;
+
 public class Card {
 
     String name;        // Name of card
@@ -37,9 +45,8 @@ public class Card {
     // TODO: Damage incrementer/decrementer Traits
     public int getDmg() {
         if (trait instanceof StrengthTrait
-         || trait instanceof SmokeArrowTrait
-         || trait instanceof WeaknessTrait)
-            dmg = ((Upgdable) trait).getMod();
+         || trait instanceof SmokeArrowTrait)
+            dmg = ((Upgradable) trait).getMod();
         return dmg;
     }
     public void setDmg(int dmg) {

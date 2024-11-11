@@ -2,6 +2,8 @@ package cardSaga;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import cardSaga.traits.*;
 
 
 public class Inventory {
@@ -9,6 +11,8 @@ public class Inventory {
     MasterList masterList = MasterList.getInstance();
 
     List<Card> cards;
+    HashMap<Integer, Card> returnMap = new HashMap<>();
+
     String entityType;
     int numUpgdCards;
     int gold;
@@ -29,12 +33,12 @@ public class Inventory {
                 cards.add(masterList.lookup("Strength Potion"));
                 break;
             case "wizard":
-                // cards.add(masterList.lookup("Fireball"));
+                cards.add(masterList.lookup("Fireball"));
                 cards.add(masterList.lookup("Magic Mirror"));
                 // cards.add(masterList.lookup("Confusion Potion"));
-                // cards.add(masterList.lookup("Weakness Potion"));
+                cards.add(masterList.lookup("Weakness Potion"));
                 break;
-            case "ranger":
+            case "archer":
                 cards.add(masterList.lookup("Bow"));
                 cards.add(masterList.lookup("Bomb"));
                 cards.add(masterList.lookup("Smoke Arrow"));
@@ -57,8 +61,8 @@ public class Inventory {
         for (var card : cards) {
             System.out.print(String.format("\tCard [%d] %s", ++i, card.name));
 
-            if (card.trait instanceof Upgdable) {
-                Upgdable Ucard = (Upgdable) card.trait;
+            if (card.trait instanceof Upgradable) {
+                Upgradable Ucard = (Upgradable) card.trait;
                 System.out.println(" has " + Ucard.getUpgdCap() + " upgrades left");
                 if (Ucard.getUpgdCap() > 0) {
                     upgdable.add(i);
@@ -82,10 +86,10 @@ public class Inventory {
     }
 
     public void remove(Card c) {
-        String cName = c.name;
+        // String cName = c.name;
         int i = 0;
         for (Card card : cards) {
-            if (card.name == cName) {
+            if (card == c) {
                 cards.remove(i);
                 break;
             }    

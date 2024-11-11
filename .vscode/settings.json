@@ -1,0 +1,13 @@
+{
+    "java.project.sourcePaths": [
+        "java",
+        "test\\java"
+    ],
+    "java.project.referencedLibraries": [
+        "libs\\junit-platform-console-standalone-1.11.3.jar",
+        "c:\\Users\\david\\projects\\cardSaga\\libs\\apiguardian-api-1.1.2.jar",
+        "c:\\Users\\david\\projects\\cardSaga\\libs\\junit-jupiter-engine-5.11.3.jar",
+        "c:\\Users\\david\\projects\\cardSaga\\libs\\junit-jupiter-api-5.11.3.jar",
+        "c:\\Users\\david\\projects\\cardSaga\\libs\\junit-platform-commons-1.11.3.jar"
+    ]
+}

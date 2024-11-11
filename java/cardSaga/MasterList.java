@@ -3,6 +3,14 @@ package cardSaga;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
+import cardSaga.traits.*;
+import cardSaga.traits.weapons.*;
+import cardSaga.traits.utilities.*;
+import cardSaga.traits.potions.*;
+import cardSaga.traits.accessories.*;
+// import cardSaga.traits.armor.*;
+import cardSaga.traits.consequences.*;
+
 
 public class MasterList {
     private static MasterList instance = new MasterList();
@@ -22,32 +30,32 @@ public class MasterList {
 
     public void initMasterList() {
         // Knight Starting Cards
-        masterList.add(new Card("Sword", Type.WEAPON, 5, new WeaponTrait(1, 2), false, 40, 5, false));
-        masterList.add(new Card("Sheild", Type.ACCESSORY, 4, new SheildTrait(), false, 40, 7, false));
-        masterList.add(new Card("Strength Potion", Type.POTION, 3, new StrengthTrait(3, 3), true, 20, 7, false));
+        masterList.add(new Card("Sword", Type.WEAPON, 5, (Trait) new WeaponTrait(1, 2), false, 40, 5, false));
+        masterList.add(new Card("Sheild", Type.ACCESSORY, 4, (Trait) new SheildTrait(), false, 40, 7, false));
+        masterList.add(new Card("Strength Potion", Type.POTION, 3, (Trait) new StrengthTrait(3, 3), true, 20, 7, false));
 
         // Wizard Starting Cards
-        masterList.add(new Card("Fireball", Type.WEAPON, 6, new WeaponTrait(1, 2), false, 27, 5, false));
-        masterList.add(new Card("Magic Mirror", Type.UTILITY, 40, new MagicMirrorTrait(1, 2), false, 27, 5, false));
-        masterList.add(new Card("Confusion Potion", Type.POTION, 5, new ConfusionTrait(), false, 27, 5, false));
-        masterList.add(new Card("Weakness Potion", Type.POTION, 0, new WeaknessTrait(1, 2), true, 19, 5, false));
+        masterList.add(new Card("Fireball", Type.WEAPON, 6, (Trait) new WeaponTrait(1, 2), false, 27, 5, false));
+        masterList.add(new Card("Magic Mirror", Type.UTILITY, 6, (Trait) new MagicMirrorTrait(1, 2), false, 27, 5, false));
+        masterList.add(new Card("Confusion Potion", Type.POTION, 5, (Trait) new ConfusionTrait(), false, 27, 5, false));
+        masterList.add(new Card("Weakness Potion", Type.POTION, 0, (Trait) new WeaknessTrait(1, 2), true, 19, 5, true));
 
-        // Ranger Starting Cards
-        masterList.add(new Card("Bow", Type.WEAPON, 3, new WeaponTrait(1, 2), false, 27, 5, false));
-        masterList.add(new Card("Bomb", Type.UTILITY, 8, new BombTrait(2, 2), false, 27, 7, false));
-        masterList.add(new Card("Smoke Arrow", Type.UTILITY, 2, new SmokeArrowTrait(2, 2), true, 27, 7, false));
-        masterList.add(new Card("Luck Potion", Type.POTION, 0, new LuckTrait(5, 2), true, 19, 5, false));
+        // Archer Starting Cards
+        masterList.add(new Card("Bow", Type.WEAPON, 3, (Trait) new WeaponTrait(1, 2), false, 27, 5, false));
+        masterList.add(new Card("Bomb", Type.UTILITY, 8, (Trait) new BombTrait(2, 2, 0), false, 27, 7, false));
+        masterList.add(new Card("Smoke Arrow", Type.UTILITY, 2, (Trait) new SmokeArrowTrait(2, 2), true, 27, 7, false));
+        masterList.add(new Card("Luck Potion", Type.POTION, 0, (Trait) new LuckTrait(5, 2), true, 19, 5, false));
 
         // Rogue Starting Cards
-        masterList.add(new Card("Dagger", Type.WEAPON, 4, new WeaponTrait(1, 2), false, 40, 5, false));
-        masterList.add(new Card("Cloak", Type.ACCESSORY, 4, new CloakTrait(), false, 40, 7, false));
-        masterList.add(new Card("Crit Potion", Type.POTION, 0, new CritTrait(), true, 20, 5, false));
+        masterList.add(new Card("Dagger", Type.WEAPON, 4, (Trait) new WeaponTrait(1, 2), false, 40, 5, false));
+        masterList.add(new Card("Cloak", Type.ACCESSORY, 4, (Trait) new CloakTrait(), false, 40, 7, false));
+        masterList.add(new Card("Crit Potion", Type.POTION, 0, (Trait) new CritTrait(), true, 20, 5, false));
 
         // Enemy Cards
         // Goblin
-        masterList.add(new Card("Knife", Type.ENEMY, 6, new EnemyWeaponTrait(), false, 40, 5, false));
-        masterList.add(new Card("Rob", Type.ENEMY, 8, new RobCon(3, 2), false, 40, 5, false)); // RobCon(1, 2)* probably but check this later
-        masterList.add(new Card("Steal", Type.ENEMY, 4, new StealCon(), false, 20, 5, false));
+        masterList.add(new Card("Knife", Type.ENEMY, 6, (Trait) new EnemyWeaponTrait(), false, 40, 5, false));
+        masterList.add(new Card("Rob", Type.ENEMY, 8, (Trait) new RobCon(3, 2), false, 40, 5, false)); // RobCon(1, 2)* probably but check this later
+        masterList.add(new Card("Steal", Type.ENEMY, 4, (Trait) new StealCon(), false, 20, 5, false));
 
 
         // Other Cards
@@ -97,7 +105,7 @@ public class MasterList {
             return new MagicMirrorTrait(origTrait.getMod(), origTrait.getUpgdCap());
         } else if (trait instanceof BombTrait) {
             BombTrait origTrait = (BombTrait) trait;
-            return new BombTrait(origTrait.getMod(), origTrait.getUpgdCap());
+            return new BombTrait(origTrait.getMod(), origTrait.getUpgdCap(), origTrait.getTurn());
         } else if (trait instanceof SmokeArrowTrait) {
             SmokeArrowTrait origTrait = (SmokeArrowTrait) trait;
             return new SmokeArrowTrait(origTrait.getMod(), origTrait.getUpgdCap());

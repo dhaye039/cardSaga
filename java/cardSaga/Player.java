@@ -1,6 +1,7 @@
 package cardSaga;
 
 import java.util.List;
+import cardSaga.traits.Trait;
 
 public class Player extends Entity {
 
