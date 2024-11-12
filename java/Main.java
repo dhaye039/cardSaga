@@ -8,8 +8,9 @@ public class Main {
     static Random rand = new Random();
     static MasterList MasterList = cardSaga.MasterList.getInstance(); 
     // static Maze maze = new Maze(11, 11);
-    static Maze maze = new Maze(5,5);
-    static boolean cardsInShop = true;
+    static int level = 1, rows = 5, cols = 4; // set to 4 but will get incremented to 5
+    static Maze maze;
+    static boolean cardsInShop = true, isLevelCompleted = false;
 
     public static void main(String[] args) {
         boolean gameover = false;
@@ -22,10 +23,15 @@ public class Main {
 
         // Game loop
         while (!gameover && numTurn != 100) {
+
             System.out.println("\t\t\t\t\t    Turn " + turn + "\n");
-            // board.displayBoard();
+            System.out.println("\t\t\t\t\t   Level  " + level + "\n");
             System.out.println("Current Options: ");
-            System.out.println("[D]ie | [F]ight | Check [I]nventory | [R]oll | Visit the [S]hop | [U]pgrade Card | Go [N]orth, [E]ast, [S]outh, or [W]est\n");
+            System.out.println("[D]ie | [F]ight | Check [I]nventory | [R]oll | Visit the [S]hop | [U]pgrade Card\n");
+            
+            if (isLevelCompleted) 
+                generateLevel();
+            
             switch (procTurn()) {
                 case "f":
                     List<Card> pCards = p.getCards();
@@ -101,10 +107,24 @@ public class Main {
         System.out.println();
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Welcome to Card Saga~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
+        generateLevel();
+        
         Player p = new Player(playerType);
         return p;
     }
 
+    private static void generateLevel() {
+        cols += 1;
+
+        if (level % 4 == 0) {
+            rows += 2;
+            cols = rows;
+        }
+
+        maze = new Maze(rows, cols);
+        isLevelCompleted = false;
+    }
+    
     private static String procTurn() {
 
         List<String> validOptions = new ArrayList<>(Arrays.asList(
@@ -256,6 +276,8 @@ public class Main {
                 --diceRoll;
                 if (maze.isAtExit()) {
                     System.out.println("Congratulations! You've reached the exit!");
+                    isLevelCompleted = true;
+                    level++;
                     break;
                 }
             } else {
