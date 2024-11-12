@@ -7,10 +7,9 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
     static Random rand = new Random();
     static MasterList MasterList = cardSaga.MasterList.getInstance(); 
-    static Board board = cardSaga.Board.getInstance();
-    static MazeGame game = new MazeGame(10, 10);
+    // static Maze maze = new Maze(11, 11);
+    static Maze maze = new Maze(5,5);
     static boolean cardsInShop = true;
-
 
     public static void main(String[] args) {
         boolean gameover = false;
@@ -65,9 +64,6 @@ public class Main {
                     else 
                         upgdCard(p);
                     break;
-                // case "w":
-                //     spin(p);
-                //     break;
                 case "d":
                     System.out.println();
                     gameover = true;
@@ -113,12 +109,11 @@ public class Main {
 
         List<String> validOptions = new ArrayList<>(Arrays.asList(
             "d"     // die
-            , "f"   // fight
+            // , "f"   // fight
             , "i"   // inventory
             , "r"   // roll
             , "s"   // shop
             , "u"   // upgrade
-            // , "w"   // wheel
         ));
 
         // board.displayBoard();
@@ -239,15 +234,15 @@ public class Main {
             System.out.println();
         }
     }
-      
+        
     private static void roll(int diceRoll) {
         String dir;
 
         List<String> dirOptions = new ArrayList<>(Arrays.asList(
-            "n", "e", "s", "w"
+            "w", "a", "s", "d"
         ));
 
-        game.displayMaze(); 
+        maze.print();
 
         while (diceRoll != 0) {
             System.out.print("Enter a Direction (Up [w], down [s], left [a], right [d]): ");
@@ -257,46 +252,18 @@ public class Main {
                 dir = scanner.nextLine().toLowerCase();
             }
 
-            if (game.movePlayer(dir, diceRoll))
+            if (maze.movePlayer(dir)) {
                 --diceRoll;
-            else
-                System.out.println("Invalid move!");
-            
-            game.displayMaze();
+                if (maze.isAtExit()) {
+                    System.out.println("Congratulations! You've reached the exit!");
+                    break;
+                }
+            } else {
+                System.out.println("Can't move in that direction.");
+            }
+
+            maze.print();
         }
-        
-        
     }
     
-    private static int spin(Player player) {
-        int totalProb = 0;
-        int inc = 0;
-        boolean isCardFound = false;
-        boolean reroll = false;
-        int totalDmg = 0;
-        List<Card> cards = player.getCards();
-
-        for (var card : cards) {
-            totalProb += card.getProb();
-        }
-
-        do {
-            int cardselect = rand.nextInt(totalProb) + 1;
-
-            for (var card : cards) {
-                if ((inc += card.getProb()) > cardselect && !isCardFound) {
-                    isCardFound = true;
-                    // card.use(totalDmg += card.getDmg());
-                    reroll = card.isReroll();
-                }
-            }
-            inc = 0;
-            isCardFound = false;
-        } while (reroll);
-
-        return totalDmg;
-    }
-
 }
-
-
