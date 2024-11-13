@@ -4,6 +4,11 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
+import cardSaga.cells.Cell;
+import cardSaga.cells.EnemyCell;
+import cardSaga.cells.PathCell;
+import cardSaga.cells.WallCell;
+
 public class Maze {
     private static final char PATH = '.';
     private static final char WALL = 'X';
@@ -40,12 +45,12 @@ public class Maze {
 
                 // 30% chance of wall
                 if (random.nextDouble() < 0.3)
-                    maze[i][j].setVal(WALL);
+                    maze[i][j] = new WallCell(WALL);
                 else
-                    maze[i][j].setVal(PATH);
+                    maze[i][j] = new PathCell(PATH);
                 if (maze[i][j].getVal() == PATH) {
                     if (mobCap > 0 && random.nextDouble() < 0.2) {
-                        maze[i][j].setVal(ENEMY); // 20% chance an enemy
+                        maze[i][j] = new EnemyCell(ENEMY); // 20% chance an enemy
                         --mobCap;
                     }
                 }
@@ -53,8 +58,8 @@ public class Maze {
         }
 
         // Set start and exit positions
-        maze[0][0].setVal(PLAYER_ICON);
-        maze[0][0].setCellType(CellType.PLAYER);
+        maze[0][0].setVal(WALL);
+        // maze[0][0].setCellType(CellType.PLAYER);
 
         // Place exit in random last column row
         this.exitRow = random.nextInt(rows);
@@ -137,7 +142,7 @@ public class Maze {
         // Print the generated maze
         for (Cell[] row : maze) {
             for (Cell cell : row) {
-                System.out.print(cell + " ");
+                System.out.print(cell.getVal() + " ");
             }
             System.out.println();
         }
