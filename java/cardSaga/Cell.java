@@ -2,18 +2,27 @@ package cardSaga;
 
 public class Cell {
 
-    char value;
+    char val;
+    CellType cellType;
 
     public Cell(char value) {
-        this.value = value;
+        this.val = value;
+        this.cellType = null;
     }
 
-    public char getValue() {
-        return value;
+    public char getVal() {
+        return val;
     }
 
-    public void setValue(char value) {
-        this.value = value;
+    public void setVal(char value) {
+        this.val = value;
     }
-    
+
+    public CellType getCellType() {
+        return cellType;
+    }
+
+    public void setCellType(CellType cellType) {
+        this.cellType = cellType;
+    }
 }

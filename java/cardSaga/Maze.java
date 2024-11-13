@@ -7,7 +7,7 @@ import java.util.Random;
 public class Maze {
     private static final char PATH = '.';
     private static final char WALL = 'X';
-    private static final char PLAYER = 'p';
+    private static final char PLAYER_ICON = 'p';
     private static final char EXIT = 'o';
     private static final char ENEMY = 'e';
 
@@ -26,7 +26,7 @@ public class Maze {
         do {
             maze = generateMaze();
         } while (!pathExists());
-        maze[playerRow][playerCol].setValue(PLAYER); // Start player position
+        maze[playerRow][playerCol].setVal(PLAYER_ICON); // Start player position
     }
 
     public Cell[][] generateMaze() {
@@ -40,12 +40,12 @@ public class Maze {
 
                 // 30% chance of wall
                 if (random.nextDouble() < 0.3)
-                    maze[i][j].setValue(WALL);
+                    maze[i][j].setVal(WALL);
                 else
-                    maze[i][j].setValue(PATH);
-                if (maze[i][j].getValue() == PATH) {
+                    maze[i][j].setVal(PATH);
+                if (maze[i][j].getVal() == PATH) {
                     if (mobCap > 0 && random.nextDouble() < 0.2) {
-                        maze[i][j].setValue(ENEMY); // 20% chance an enemy
+                        maze[i][j].setVal(ENEMY); // 20% chance an enemy
                         --mobCap;
                     }
                 }
@@ -53,11 +53,12 @@ public class Maze {
         }
 
         // Set start and exit positions
-        maze[0][0].setValue(PLAYER);
+        maze[0][0].setVal(PLAYER_ICON);
+        maze[0][0].setCellType(CellType.PLAYER);
 
         // Place exit in random last column row
         this.exitRow = random.nextInt(rows);
-        maze[exitRow][cols - 1].setValue(EXIT);
+        maze[exitRow][cols - 1].setVal(EXIT);
 
         return maze;
     }
@@ -82,7 +83,7 @@ public class Maze {
             int col = pos[1];
 
             // Check if we've reached any cell in the last column with the exit
-            if (col == cols - 1 && maze[row][col].getValue() == EXIT) {
+            if (col == cols - 1 && maze[row][col].getVal() == EXIT) {
                 return true;
             }
 
@@ -93,7 +94,7 @@ public class Maze {
 
                 // Check if the new position is within bounds and is a path, and not visited
                 if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols 
-                        && maze[newRow][newCol].getValue() != WALL && !visited[newRow][newCol]) {
+                        && maze[newRow][newCol].getVal() != WALL && !visited[newRow][newCol]) {
                     visited[newRow][newCol] = true;
                     queue.add(new int[] {newRow, newCol});
                 }
@@ -117,11 +118,11 @@ public class Maze {
 
         // Check if the new position is within bounds and is a path
         if (newRow >= 0 && newRow < maze.length && newCol >= 0 && newCol < maze[0].length 
-                && maze[newRow][newCol].getValue() != WALL) {
-            maze[playerRow][playerCol].setValue(PATH); // Clear previous player position
+                && maze[newRow][newCol].getVal() != WALL) {
+            maze[playerRow][playerCol].setVal(PATH); // Clear previous player position
             playerRow = newRow;
             playerCol = newCol;
-            maze[playerRow][playerCol].setValue(PLAYER); // Update new player position
+            maze[playerRow][playerCol].setVal(PLAYER_ICON); // Update new player position
             return true;
         }
 
