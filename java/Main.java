@@ -8,13 +8,13 @@ public class Main {
     static Random rand = new Random();
     static MasterList MasterList = cardSaga.MasterList.getInstance(); 
     // static Maze maze = new Maze(11, 11);
-    static int level = 1, rows = 5, cols = 4; // set to 4 but will get incremented to 5
+    public static int level = 1, turn = 1;
+    static int rows = 5, cols = 4; // set to 4 but will get incremented to 5
     static Maze maze;
     static boolean cardsInShop = true, isLevelCompleted = false;
 
     public static void main(String[] args) {
         boolean gameover = false;
-        int turn = 1;
 
         // Start game
         Player p = startGame();
@@ -27,26 +27,29 @@ public class Main {
             System.out.println("\t\t\t\t\t    Turn " + turn + "\n");
             System.out.println("\t\t\t\t\t   Level  " + level + "\n");
             System.out.println("Current Options: ");
-            System.out.println("[D]ie | [F]ight | Check [I]nventory | [R]oll | Visit the [S]hop | [U]pgrade Card\n");
+            System.out.println("Check [I]nventory | View [M]ap | [R]oll | Visit the [S]hop | [U]pgrade Card | [E]xit Game\n");
             
-            if (isLevelCompleted) 
-                generateLevel();
+            if (isLevelCompleted) {
+                MasterList.populateShop();
+                cardsInShop = true;
+                generateLevel(p);
+            }
             
             switch (procTurn()) {
-                case "f":
-                    List<Card> pCards = p.getCards();
-                    boolean hasCards = !pCards.isEmpty();
-                    boolean canPlay = pCards.stream().anyMatch(c -> !c.isReroll());
-                    System.out.println("\n");
+                // case "f":
+                //     List<Card> pCards = p.getCards();
+                //     boolean hasCards = !pCards.isEmpty();
+                //     boolean canPlay = pCards.stream().anyMatch(c -> !c.isReroll());
+                //     System.out.println("\n");
                     
-                    if (hasCards && canPlay) {  
-                        Enemy e = new Enemy("goblin", 5);
-                        new Fight(p, e, turn).startFight();
-                    } else {
-                        System.out.println("\n\tYou do not have sufficient cards to fight.\n");
-                    }
-                    ++turn;
-                    break;
+                //     if (hasCards && canPlay) {  
+                //         Enemy e = new Enemy("goblin", 5);
+                //         new Fight(p, e, turn).startFight();
+                //     } else {
+                //         System.out.println("\n\tYou do not have sufficient cards to fight.\n");
+                //     }
+                //     ++turn;
+                //     break;
                 case "i":
                     p.viewInventory();
                     break;
@@ -54,9 +57,8 @@ public class Main {
                     int rollNum = 0;
                     rollNum = (rand.nextInt(6) + 1);               
                     System.out.println("\n\tYou rolled a " + rollNum + ".\n");
-                    MasterList.populateShop();
-                    cardsInShop = true;
                     roll(rollNum);
+                    ++turn;
                     break;
                 case "s":
                     if (cardsInShop)
@@ -70,13 +72,19 @@ public class Main {
                     else 
                         upgdCard(p);
                     break;
-                case "d":
+                case "m":
+                
+                    System.out.println("\nLevel " + level + " Map:\n");
+                    maze.print();
+                    break;
+                case "e":
                     System.out.println();
                     gameover = true;
                     break;
                 default:
                     System.out.println("Not implemented yet.");
             }
+
 
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
@@ -105,15 +113,17 @@ public class Main {
             playerType = scanner.nextLine();
         }
         System.out.println();
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Welcome to Card Saga~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
-        generateLevel();
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Welcome to Card Saga~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         
         Player p = new Player(playerType);
+
+        generateLevel(p);
+
         return p;
     }
 
-    private static void generateLevel() {
+    private static void generateLevel(Player... players) {
         cols += 1;
 
         if (level % 4 == 0) {
@@ -121,16 +131,17 @@ public class Main {
             cols = rows;
         }
 
-        maze = new Maze(rows, cols);
+        maze = new Maze(rows, cols, players[0], level);
         isLevelCompleted = false;
     }
     
     private static String procTurn() {
 
         List<String> validOptions = new ArrayList<>(Arrays.asList(
-            "d"     // die
+            "e"     // exit
             // , "f"   // fight
             , "i"   // inventory
+            , "m"   // map/maze
             , "r"   // roll
             , "s"   // shop
             , "u"   // upgrade
@@ -141,7 +152,7 @@ public class Main {
         String turn = scanner.nextLine().toLowerCase();
 
         while (!validOptions.contains(turn)) {
-            System.out.print("Please enter 'd', 'i', 'r', 's', 'u', or 'w': ");
+            System.out.print("Please enter 'e', 'i', 'm', 'r', 's', or 'u': ");
             turn = scanner.nextLine();
         }
         return turn;
@@ -272,20 +283,21 @@ public class Main {
                 dir = scanner.nextLine().toLowerCase();
             }
 
+            System.out.println();
+
             if (maze.movePlayer(dir)) {
                 --diceRoll;
                 if (maze.isAtExit()) {
-                    System.out.println("Congratulations! You've reached the exit!");
+                    System.out.println("Congratulations! You've reached the exit!\n");
                     isLevelCompleted = true;
                     level++;
                     break;
                 }
             } else {
-                System.out.println("Can't move in that direction.");
+                System.out.println("Can't move in that direction.\n");
             }
 
             maze.print();
         }
     }
-    
 }

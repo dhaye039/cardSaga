@@ -2,14 +2,19 @@ package cardSaga.cells;
 
 public class WallCell extends Cell {
 
-    public WallCell(char val) {
-        super(val);
+    int toughness;
+
+    public WallCell() {
+        super();
+        this.val = 'X';
+        this.toughness = 50;
+    } 
+
+    public int getToughness() {
+        return toughness;
     }
 
-    @Override
-    public void interact() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'interact'");
+    public void setToughness(int toughness) {
+        this.toughness = toughness;
     }
-    
 }

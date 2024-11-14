@@ -7,4 +7,5 @@ public enum CellType {
     ITEM,
     PATH,
     WALL,
+    EXIT,
 }

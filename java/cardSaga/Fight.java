@@ -45,10 +45,10 @@ public class Fight {
         returnMap = p.inventory.returnMap;
     }
 
-    public void startFight() {
+    public boolean startFight() {
         int pTotDmg = 0;
         int eTotDmg = 0;
-        boolean reroll = false;
+        boolean reroll = false, result = false;
         flags.reset(flags.pUsedCrit, flags.eUsedCrit, flags.useDodge);
 
         // Check if any card is scheduled to return this turn
@@ -64,7 +64,8 @@ public class Fight {
             flags.reset(flags.pImmune, flags.pMirrorCard, flags.eSteal);
 
             // Player's turn
-            System.out.println("Player's drawings:");
+            System.out.println("\nPlayer's drawings:"); waiting(1000);
+
             do {
                 do { 
                     pCard = spinWheel(p.getCards());
@@ -74,8 +75,6 @@ public class Fight {
 
                 if (pCard.affectOpp) {
                     eTotDmg = calcDmg(pCard, eTotDmg);
-                    System.out.println("bonk " + eTotDmg);
-
                 } else {
                     pTotDmg = calcDmg(pCard, pTotDmg);
                 }
@@ -87,12 +86,13 @@ public class Fight {
 
                 reroll = pCard.reroll;
             } while (reroll);
-            System.out.println(pTurn + "\n");
+            System.out.println(pTurn + "\n"); 
 
-            System.out.println("-------------------------------------------------\n");
+            System.out.println("-------------------------------------------------\n"); waiting(500);
 
             // Enemy's turn
-            System.out.println("Enemy's drawings:");
+            System.out.println("Enemy's drawings:"); waiting(1000);
+
             do {
                 do { 
                     eCard = spinWheel(e.getCards());
@@ -112,16 +112,18 @@ public class Fight {
             } while (reroll);
             System.out.println(eTurn + "\n");
 
+            System.out.println("-------------------------------------------------\n"); waiting(500);
+
             // Calculate winner
             if (flags.pUsedCrit) pTotDmg *= 2;
             else if (flags.eUsedCrit) eTotDmg *= 2;
 
             // Print outcome
-            System.out.println(String.format("\tFinal Totals:\n\tPlayer [%s] | Enemy [%s]", pTotDmg, eTotDmg));
+            System.out.println(String.format("Final Totals:\n\n\tPlayer [%s] | Enemy [%s]\n", pTotDmg, eTotDmg));
 
             // Compare total damages
             if (pTotDmg > eTotDmg) { // player wins
-                System.out.println("\tPlayer wins! Enemy dropped " + e.gold + " gold\n");
+                System.out.println("\tYou defeated the enemy and moved into their space!\n\tEnemy dropped " + e.gold + " gold.\n");
 
                 if (pCard.getTrait() instanceof EnemyWeaponTrait) 
                     apply(pCard, e);
@@ -145,8 +147,9 @@ public class Fight {
 
                 p.incXP(1);
                 p.inventory.addGold(e.gold);
+                result = true;
             } else if (eTotDmg > pTotDmg) { // enemy wins
-                System.out.println("\tEnemy wins.\n");
+                System.out.println("\tYou lost the fight and stay in your current position.\n");
 
                 if (flags.useDodge) {
                     flags.pImmune = isDodging();
@@ -158,6 +161,7 @@ public class Fight {
                     apply(eCard, p);
                     if (p.inventory.addGold(-3) < 0) p.inventory.setGold(0); // -3 gold for losing
                 }
+                result = false;
             } else { // tie
                 System.out.println("\nIt's a tie! Restarting fight...\n");
                 System.out.println("_________________________________________________\n");
@@ -174,8 +178,13 @@ public class Fight {
                     p.inventory.remove(pCard);
             }
 
-            if (pTotDmg == eTotDmg) continue; else break;
+            if (pTotDmg == eTotDmg) continue; else {
+                waiting(1000);
+                break;
+            }
         }
+
+        return result;
     }
 
     private Card spinWheel(List<Card> cards) {
@@ -293,5 +302,13 @@ public class Fight {
                 return false;
         }
         return false;
+    }
+
+    public void waiting(int millis) {
+        try {
+            Thread.sleep(millis); // Pauses for 1 second (1000 milliseconds)
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

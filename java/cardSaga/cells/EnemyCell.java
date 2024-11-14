@@ -1,15 +1,20 @@
 package cardSaga.cells;
 
+import cardSaga.Enemy;
+import cardSaga.Fight;
+import cardSaga.Player;
+
 public class EnemyCell extends Cell {
 
-    public EnemyCell(char val) {
-        super(val);
+    Enemy enemy;
+
+    public EnemyCell(String enemyType) {
+        super();
+        this.val = 'e';
+        this.enemy = new Enemy(enemyType, 3);
     }
 
-    @Override
-    public void interact() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'interact'");
+    public Enemy getEnemy() {
+        return enemy;
     }
-    
 }
