@@ -12,9 +12,9 @@ public class Player extends Entity {
     public Player(String entityType) {
         super(entityType);
         this.inventory = new Inventory(entityType, 1, 10);
-        this.hp = 1;
+        this.hp = 10;
         this.level = 0;
-        this.xp = 3;
+        this.xp = 0;
     }
     
     public Inventory getInventory() {

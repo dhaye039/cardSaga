@@ -27,7 +27,7 @@ public class Main {
             System.out.println("\t\t\t\t\t    Turn " + turn + "\n");
             System.out.println("\t\t\t\t\t   Level  " + level + "\n");
             System.out.println("Current Options: ");
-            System.out.println("Check [I]nventory | View [M]ap | [R]oll | Visit the [S]hop | [U]pgrade Card | [E]xit Game\n");
+            System.out.println("Check [I]nventory | View [M]ap | [R]oll | [U]pgrade Card | [E]xit Game\n");
             
             if (isLevelCompleted) {
                 MasterList.populateShop();
@@ -60,12 +60,12 @@ public class Main {
                     roll(rollNum);
                     ++turn;
                     break;
-                case "s":
-                    if (cardsInShop)
-                        visitShop(p);
-                    else 
-                        System.out.println("\n\tThere are currently no cards in the shop.\n");
-                    break;
+                // case "s":
+                    // if (cardsInShop)
+                    //     visitShop(p);
+                    // else 
+                    //     System.out.println("\n\tThere are currently no cards in the shop.\n");
+                    // break;
                 case "u":
                     if (p.getInventory().getnumUpgdCards() == 0)
                         System.out.println("\n\tYou have no Upgrade Cards.\n");
@@ -143,7 +143,7 @@ public class Main {
             , "i"   // inventory
             , "m"   // map/maze
             , "r"   // roll
-            , "s"   // shop
+            // , "s"   // shop
             , "u"   // upgrade
         ));
 
@@ -156,65 +156,6 @@ public class Main {
             turn = scanner.nextLine();
         }
         return turn;
-    }
-
-    private static void visitShop(Player player) {
-        List<Card> shop = MasterList.getShop();
-        Inventory pInventory = player.getInventory();
-        String input = "";
-
-        System.out.println("\n\tWelcome to the Shop!");
-
-        do {
-            List<Integer> buyable = new ArrayList<>();
-            int i = 0;
-            Inventory inven = player.getInventory();
-            int playerGold = inven.getGold();
-            boolean isValidInput = false;
-            boolean afrdable = false;
-            int cardNum = -1;
-
-            for (var card : shop) {
-                System.out.println(String.format("\n\tCard [%d]: %s (%d dmg) -- %s\n\tCost: %d gold", ++i, card.getName(), card.getDmg(), card.getTrait().getDesc(), card.getCost()));
-                buyable.add(i);
-            }
-            System.out.println("\n\tYou have " + playerGold + " gold. Enter 'x' to Exit.\n");
-            
-            System.out.print("What would you like to buy? [number]: ");
-            input = scanner.nextLine().toLowerCase();
-
-            while (!isValidInput && !afrdable && !input.equals("x")) { // while input isn't valid and card isn't affordable
-                try {
-                    cardNum = Integer.parseInt(input);
-                    isValidInput = buyable.contains(cardNum);
-                } catch (NumberFormatException e) {
-                    System.out.print("Please enter a valid card [number], or enter 'x' to exit: ");
-                    input = scanner.nextLine().toLowerCase();
-                    continue;
-                }
-
-                if (!isValidInput) {
-                    System.out.print("Please enter a valid card [number], or enter 'x' to exit: ");
-                    input = scanner.nextLine().toLowerCase();
-                    continue;
-                }
-
-                Card reqCard = shop.get(cardNum-1);
-
-                if (playerGold >= reqCard.getCost()) { // buy card
-                    pInventory.addCard(shop.remove(cardNum-1));
-                    inven.addGold(reqCard.getCost() * (-1));
-                    if (shop.size() == 0) cardsInShop = false;
-                } else {
-                    System.out.print("\n\tYou do not have enough gold to buy this card.\n\nPlease enter a valid card [number], or enter 'x' to exit: ");
-                    input = scanner.nextLine().toLowerCase();
-                    afrdable = false;
-                }
-            }
-        } while (!input.equals("x") && cardsInShop);
-        if (!cardsInShop) System.out.println("\n\tThere are no more cards in the shop. Come back later!");
-        System.out.println();
-
     }
 
     private static void upgdCard(Player player) {
@@ -285,7 +226,7 @@ public class Main {
 
             System.out.println();
 
-            if (maze.movePlayer(dir)) {
+            if (maze.movePlayer(dir, turn)) {
                 --diceRoll;
                 if (maze.isAtExit()) {
                     System.out.println("Congratulations! You've reached the exit!\n");

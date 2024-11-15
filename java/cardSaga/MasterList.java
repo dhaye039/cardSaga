@@ -16,74 +16,74 @@ public class MasterList {
     private static MasterList instance = new MasterList();
     private List<Card> masterList = new ArrayList<Card>();
     private List<Card> shop = new ArrayList<>();
-    private Random rand = new Random();
+        private Random rand = new Random();
+        
+        private MasterList() {
+            initMasterList();
+            int cardToAdd;
     
-    private MasterList() {
-        initMasterList();
-        int cardToAdd;
-
-        for (int i = 0; i < 3; ++i) {
-            cardToAdd = rand.nextInt(masterList.size());
-            shop.add(masterList.get(cardToAdd));
-        }
-    }
-
-    public void initMasterList() {
-        // Knight Starting Cards
-        masterList.add(new Card("Sword", Type.WEAPON, 5, (Trait) new WeaponTrait(1, 2), false, 40, 5, false));
-        masterList.add(new Card("Sheild", Type.ACCESSORY, 4, (Trait) new SheildTrait(), false, 40, 7, false));
-        masterList.add(new Card("Strength Potion", Type.POTION, 3, (Trait) new StrengthTrait(3, 3), true, 20, 7, false));
-
-        // Wizard Starting Cards
-        masterList.add(new Card("Fireball", Type.WEAPON, 6, (Trait) new WeaponTrait(1, 2), false, 27, 5, false));
-        masterList.add(new Card("Magic Mirror", Type.UTILITY, 6, (Trait) new MagicMirrorTrait(1, 2), false, 27, 5, false));
-        masterList.add(new Card("Confusion Potion", Type.POTION, 5, (Trait) new ConfusionTrait(), false, 27, 5, false));
-        masterList.add(new Card("Weakness Potion", Type.POTION, 0, (Trait) new WeaknessTrait(1, 2), true, 19, 5, true));
-
-        // Archer Starting Cards
-        masterList.add(new Card("Bow", Type.WEAPON, 3, (Trait) new WeaponTrait(1, 2), false, 27, 5, false));
-        masterList.add(new Card("Bomb", Type.UTILITY, 8, (Trait) new BombTrait(2, 2, 0), false, 27, 7, false));
-        masterList.add(new Card("Smoke Arrow", Type.UTILITY, 2, (Trait) new SmokeArrowTrait(2, 2), true, 27, 7, false));
-        masterList.add(new Card("Luck Potion", Type.POTION, 0, (Trait) new LuckTrait(5, 2), true, 19, 5, false));
-
-        // Rogue Starting Cards
-        masterList.add(new Card("Dagger", Type.WEAPON, 4, (Trait) new WeaponTrait(1, 2), false, 40, 5, false));
-        masterList.add(new Card("Cloak", Type.ACCESSORY, 4, (Trait) new CloakTrait(), false, 40, 7, false));
-        masterList.add(new Card("Crit Potion", Type.POTION, 0, (Trait) new CritTrait(), true, 20, 5, false));
-
-        // Enemy Cards
-        // Goblin
-        masterList.add(new Card("Knife", Type.ENEMY, 6, (Trait) new EnemyWeaponTrait(), false, 40, 5, false));
-        masterList.add(new Card("Rob", Type.ENEMY, 8, (Trait) new RobCon(3, 2), false, 40, 5, false)); // RobCon(1, 2)* probably but check this later
-        masterList.add(new Card("Steal", Type.ENEMY, 4, (Trait) new StealCon(), false, 20, 5, false));
-
-
-        // Other Cards
-        // masterList.add(new card("Grapple", Type.UTILITY, 4, new GrappleTrait(1, 2), false, 27, 7));
-    }
-
-    public void populateShop() {
-        int cardsToAdd = Math.max(3, shop.size());
-
-        shop.clear();
-
-        while (shop.size() < cardsToAdd) {
-            int cardToAdd = rand.nextInt(masterList.size());
-            Card c = masterList.get(cardToAdd);
-            if (!c.type.equals(Type.WEAPON) && !c.type.equals(Type.ENEMY)) {
-                shop.add(c);
+            for (int i = 0; i < 3; ++i) {
+                cardToAdd = rand.nextInt(masterList.size());
+                shop.add(masterList.get(cardToAdd));
             }
         }
-    }
-
-    public void extendShop() {
-        int cardToAdd = rand.nextInt(masterList.size());
-
-        shop.add(masterList.get(cardToAdd));
-    }
-
-    public List<Card> getShop() {
-        return shop;
+    
+        public void initMasterList() {
+            // Knight Starting Cards
+            masterList.add(new Card("Sword", Type.WEAPON, 5, (Trait) new WeaponTrait(1, 2), false, 40, 5, false));
+            masterList.add(new Card("Sheild", Type.ACCESSORY, 4, (Trait) new SheildTrait(), false, 40, 7, false));
+            masterList.add(new Card("Strength Potion", Type.POTION, 3, (Trait) new StrengthTrait(3, 3), true, 20, 7, false));
+    
+            // Wizard Starting Cards
+            masterList.add(new Card("Fireball", Type.WEAPON, 6, (Trait) new WeaponTrait(1, 2), false, 27, 5, false));
+            masterList.add(new Card("Magic Mirror", Type.UTILITY, 6, (Trait) new MagicMirrorTrait(1, 2), false, 27, 5, false));
+            masterList.add(new Card("Confusion Potion", Type.POTION, 5, (Trait) new ConfusionTrait(), false, 27, 5, false));
+            masterList.add(new Card("Weakness Potion", Type.POTION, 0, (Trait) new WeaknessTrait(1, 2), true, 19, 5, true));
+    
+            // Archer Starting Cards
+            masterList.add(new Card("Bow", Type.WEAPON, 3, (Trait) new WeaponTrait(1, 2), false, 27, 5, false));
+            masterList.add(new Card("Bomb", Type.UTILITY, 8, (Trait) new BombTrait(2, 2, 0), false, 27, 7, false));
+            masterList.add(new Card("Smoke Arrow", Type.UTILITY, 2, (Trait) new SmokeArrowTrait(2, 2), true, 27, 7, false));
+            masterList.add(new Card("Luck Potion", Type.POTION, 0, (Trait) new LuckTrait(5, 2), true, 19, 5, false));
+    
+            // Rogue Starting Cards
+            masterList.add(new Card("Dagger", Type.WEAPON, 4, (Trait) new WeaponTrait(1, 2), false, 40, 5, false));
+            masterList.add(new Card("Cloak", Type.ACCESSORY, 4, (Trait) new CloakTrait(), false, 40, 7, false));
+            masterList.add(new Card("Crit Potion", Type.POTION, 0, (Trait) new CritTrait(), true, 20, 5, false));
+    
+            // Enemy Cards
+            // Goblin
+            masterList.add(new Card("Knife", Type.ENEMY, 6, (Trait) new EnemyWeaponTrait(), false, 40, 5, false));
+            masterList.add(new Card("Rob", Type.ENEMY, 8, (Trait) new RobCon(3, 2), false, 40, 5, false)); // RobCon(1, 2)* probably but check this later
+            masterList.add(new Card("Steal", Type.ENEMY, 4, (Trait) new StealCon(), false, 20, 5, false));
+    
+    
+            // Other Cards
+            // masterList.add(new card("Grapple", Type.UTILITY, 4, new GrappleTrait(1, 2), false, 27, 7));
+        }
+    
+        public void populateShop() {
+            int cardsToAdd = Math.max(3, shop.size());
+    
+            shop.clear();
+    
+            while (shop.size() < cardsToAdd) {
+                int cardToAdd = rand.nextInt(masterList.size());
+                Card c = masterList.get(cardToAdd);
+                if (!c.type.equals(Type.WEAPON) && !c.type.equals(Type.ENEMY)) {
+                    shop.add(c);
+                }
+            }
+        }
+    
+        public void extendShop() {
+            int cardToAdd = rand.nextInt(masterList.size());
+    
+            shop.add(masterList.get(cardToAdd));
+        }
+    
+        public List<Card> getShop() {
+            return shop;
     }
 
     public Card lookup(String name) {
