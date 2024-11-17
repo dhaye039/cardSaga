@@ -141,36 +141,37 @@ public class Maze {
             case "d": newCol++; break; // Right
         }
 
-        if (maze[newRow][newCol] instanceof EnemyCell) {
-            Enemy enemy = ((EnemyCell) maze[newRow][newCol]).getEnemy();
-            boolean playerWon = new Fight(p, enemy, turn).startFight(); // Start with turn = 0
-
-            if (playerWon) {
-                System.out.println("You defeated the enemy and moved into their space!\n");
-                maze[playerRow][playerCol] = new PathCell(); // Clear previous position
-                playerRow = newRow;
-                playerCol = newCol;
-                maze[playerRow][playerCol] = new PathCell(); // Enemy "dies"
-            } else {
-                // System.out.println("You lost the fight and stay in your current position.\n");
-                return true;
-            }
-        } else if (maze[newRow][newCol] instanceof ShopCell) {
-            // TODO: add y/n enter shop
-            if (cardsInShop)
-                visitShop(p);
-            else 
-                System.out.println("\tThere are currently no cards in the shop.\n");
-        } else if (maze[newRow][newCol] instanceof AnvilCell) {
-            if (p.getInventory().getnumUpgdCards() == 0)
-                System.out.println("\tYou have no Upgrade Cards.\n");
-            else 
-                upgdCard(p);
-        }
-
         // Check if the new position is within bounds and is a path
         if (newRow >= 0 && newRow < maze.length && newCol >= 0 && newCol < maze[0].length 
-                && !(maze[newRow][newCol] instanceof WallCell)) {
+            && !(maze[newRow][newCol] instanceof WallCell)) {
+
+            if (maze[newRow][newCol] instanceof EnemyCell) {
+                Enemy enemy = ((EnemyCell) maze[newRow][newCol]).getEnemy();
+                boolean playerWon = new Fight(p, enemy, turn).startFight(); // Start with turn = 0
+    
+                if (playerWon) {
+                    System.out.println("You defeated the enemy and moved into their space!\n");
+                    maze[playerRow][playerCol] = new PathCell(); // Clear previous position
+                    playerRow = newRow;
+                    playerCol = newCol;
+                    maze[playerRow][playerCol] = new PathCell(); // Enemy "dies"
+                } else {
+                    // System.out.println("You lost the fight and stay in your current position.\n");
+                    return true;
+                }
+            } else if (maze[newRow][newCol] instanceof ShopCell) {
+                // TODO: add y/n enter shop
+                if (cardsInShop)
+                    visitShop(p);
+                else 
+                    System.out.println("\tThere are currently no cards in the shop.\n");
+            } else if (maze[newRow][newCol] instanceof AnvilCell) {
+                if (p.getInventory().getnumUpgdCards() == 0)
+                    System.out.println("\tYou have no Upgrade Cards.\n");
+                else 
+                    upgdCard(p);
+            }
+
             if (maze[playerRow][playerCol] instanceof ShopCell) {
                 maze[playerRow][playerCol].setVal('s');
             } else if (maze[playerRow][playerCol] instanceof AnvilCell && anvilUses != 0) {

@@ -172,6 +172,8 @@ public class Fight {
                 flags.eUsedCrit = false;
             }
 
+            p.hp = Math.min(100, p.hp + pTotDmg - eTotDmg);
+
             if (pCard.isBorrowed) { // TODO: add borrow-ability to card
                 --pCard.numUses;
                 if (pCard.numUses <= 0)

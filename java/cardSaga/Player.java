@@ -14,8 +14,8 @@ public class Player extends Entity {
         super(entityType);
         this.inventory = new Inventory(entityType, 1, 10);
         this.hp = 100;
-        this.level = 0;
-        this.xp = 5;
+        // this.level = 12;
+        this.xp = 0;
     }
     
     public Inventory getInventory() {
@@ -44,7 +44,9 @@ public class Player extends Entity {
             
         System.out.println("\t  Gold: " + inventory.gold);
         System.out.println("\t  Upgrade Cards: " + inventory.numUpgdCards);
-        System.out.println("\t  xp -" + xp + "-");
+        System.out.println();
+
+        // System.out.println("\t  xp -" + xp + "-");
         // System.out.println("\t  Level -" + calcLevel() + "-\n");
         
     }
@@ -94,8 +96,7 @@ public class Player extends Entity {
         bar.append("]");
 
         // Insert the level in the middle
-        int levelPosition = 10 / 2;
-        bar.setCharAt(1 + levelPosition, Character.forDigit(level, 10));
+        bar.insert(6, String.valueOf(level));
 
         return bar.toString();
     }

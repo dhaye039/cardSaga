@@ -27,23 +27,22 @@ public class Main {
             System.out.println("\t\t\t\t\t    Turn " + turn + "\n");
             System.out.println("\t\t\t\t\t   Level  " + level + "\n");
             System.out.println("Current Options: ");
-            System.out.println("Check [I]nventory | View [M]ap | [R]oll | [E]xit Game\n");
+            System.out.println("Check [I]nventory | View [M]ap | [M]ove | [E]xit Game\n");
             
             if (isLevelCompleted) {
                 MasterList.populateShop();
                 cardsInShop = true;
                 generateLevel(p);
             }
+
+            maze.print();
             
             switch (procTurn()) {
                 case "i":
                     p.viewInventory();
                     break;
-                case "r":  
-                    int rollNum = 0;
-                    rollNum = (rand.nextInt(6) + 1);               
-                    System.out.println("\n\tYou rolled a " + rollNum + ".\n");
-                    roll(rollNum);
+                case "m":  
+                    move();
                     ++turn;
                     break;
                 // case "u":
@@ -52,11 +51,10 @@ public class Main {
                     // else 
                     //     upgdCard(p);
                     // break;
-                case "m":
-                
-                    System.out.println("\nLevel " + level + " Map:\n");
-                    maze.print();
-                    break;
+                // case "m":
+                //     System.out.println("\nLevel " + level + " Map:\n");
+                //     maze.print();
+                //     break;
                 case "e":
                     System.out.println();
                     gameover = true;
@@ -121,8 +119,8 @@ public class Main {
             "e"     // exit
             // , "f"   // fight
             , "i"   // inventory
-            , "m"   // map/maze
-            , "r"   // roll
+            , "m"   // move
+            // , "r"   // roll
             // , "s"   // shop
             // , "u"   // upgrade
         ));
@@ -138,32 +136,35 @@ public class Main {
         return turn;
     }
         
-    private static void roll(int diceRoll) {
+    private static void move() {
         String dir;
 
         List<String> dirOptions = new ArrayList<>(Arrays.asList(
-            "w", "a", "s", "d"
+            "w", "a", "s", "d", "e"
         ));
 
         maze.print();
 
-        while (diceRoll != 0) {
-            System.out.print("Enter a Direction (Up [w], down [s], left [a], right [d]): ");
+        while (true) {
+            System.out.print("Key - up [w] | down [s] | left [a] | right [d]\nEnter a Direction or press [e] return to option screen: ");
             dir = scanner.nextLine().toLowerCase();
             while(!dirOptions.contains(dir)) {
-                System.out.print("Please enter a valid a direction (w, s, a, d): ");
+                System.out.print("Please enter a valid a direction (w, s, a, d) or 'e': ");
                 dir = scanner.nextLine().toLowerCase();
             }
 
             System.out.println();
 
+            if (dir.equals("e")) {
+                return;
+            }
+
             if (maze.movePlayer(dir, turn)) {
-                --diceRoll;
                 if (maze.isAtExit()) {
                     System.out.println("Congratulations! You've reached the exit!\n");
                     isLevelCompleted = true;
                     level++;
-                    break;
+                    return;
                 }
             } else {
                 System.out.println("Can't move in that direction.\n");

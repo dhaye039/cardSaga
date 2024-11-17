@@ -37,7 +37,7 @@ public class MasterList {
             // Wizard Starting Cards
             masterList.add(new Card("Fireball", Type.WEAPON, 6, (Trait) new WeaponTrait(1, 2), false, 27, 5, false));
             masterList.add(new Card("Magic Mirror", Type.UTILITY, 6, (Trait) new MagicMirrorTrait(1, 2), false, 27, 5, false));
-            masterList.add(new Card("Confusion Potion", Type.POTION, 5, (Trait) new ConfusionTrait(), false, 27, 5, false));
+            // masterList.add(new Card("Confusion Potion", Type.POTION, 5, (Trait) new ConfusionTrait(), false, 27, 5, false));
             masterList.add(new Card("Weakness Potion", Type.POTION, 0, (Trait) new WeaknessTrait(1, 2), true, 19, 5, true));
     
             // Archer Starting Cards
@@ -55,7 +55,7 @@ public class MasterList {
             // Goblin
             masterList.add(new Card("Knife", Type.ENEMY, 6, (Trait) new EnemyWeaponTrait(), false, 40, 5, false));
             masterList.add(new Card("Rob", Type.ENEMY, 8, (Trait) new RobCon(3, 2), false, 40, 5, false)); // RobCon(1, 2)* probably but check this later
-            masterList.add(new Card("Steal", Type.ENEMY, 4, (Trait) new StealCon(), false, 20, 5, false));
+            masterList.add(new Card("Steal", Type.ENEMY, 5, (Trait) new StealCon(), false, 20, 5, false));
     
     
             // Other Cards
