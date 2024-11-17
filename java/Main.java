@@ -27,7 +27,7 @@ public class Main {
             System.out.println("\t\t\t\t\t    Turn " + turn + "\n");
             System.out.println("\t\t\t\t\t   Level  " + level + "\n");
             System.out.println("Current Options: ");
-            System.out.println("Check [I]nventory | View [M]ap | [R]oll | [U]pgrade Card | [E]xit Game\n");
+            System.out.println("Check [I]nventory | View [M]ap | [R]oll | [E]xit Game\n");
             
             if (isLevelCompleted) {
                 MasterList.populateShop();
@@ -36,20 +36,6 @@ public class Main {
             }
             
             switch (procTurn()) {
-                // case "f":
-                //     List<Card> pCards = p.getCards();
-                //     boolean hasCards = !pCards.isEmpty();
-                //     boolean canPlay = pCards.stream().anyMatch(c -> !c.isReroll());
-                //     System.out.println("\n");
-                    
-                //     if (hasCards && canPlay) {  
-                //         Enemy e = new Enemy("goblin", 5);
-                //         new Fight(p, e, turn).startFight();
-                //     } else {
-                //         System.out.println("\n\tYou do not have sufficient cards to fight.\n");
-                //     }
-                //     ++turn;
-                //     break;
                 case "i":
                     p.viewInventory();
                     break;
@@ -60,18 +46,12 @@ public class Main {
                     roll(rollNum);
                     ++turn;
                     break;
-                // case "s":
-                    // if (cardsInShop)
-                    //     visitShop(p);
+                // case "u":
+                    // if (p.getInventory().getnumUpgdCards() == 0)
+                    //     System.out.println("\n\tYou have no Upgrade Cards.\n");
                     // else 
-                    //     System.out.println("\n\tThere are currently no cards in the shop.\n");
+                    //     upgdCard(p);
                     // break;
-                case "u":
-                    if (p.getInventory().getnumUpgdCards() == 0)
-                        System.out.println("\n\tYou have no Upgrade Cards.\n");
-                    else 
-                        upgdCard(p);
-                    break;
                 case "m":
                 
                     System.out.println("\nLevel " + level + " Map:\n");
@@ -144,7 +124,7 @@ public class Main {
             , "m"   // map/maze
             , "r"   // roll
             // , "s"   // shop
-            , "u"   // upgrade
+            // , "u"   // upgrade
         ));
 
         // board.displayBoard();
@@ -156,55 +136,6 @@ public class Main {
             turn = scanner.nextLine();
         }
         return turn;
-    }
-
-    private static void upgdCard(Player player) {
-
-        Inventory inventory = player.getInventory();
-        String input = "";
-
-        do {
-            List<Integer> upgdable = inventory.getUpgdable();
-            int cardNum = -1;
-            boolean isValidInput = false;
-
-            if (upgdable.isEmpty()) {
-                System.out.println("\n\tYou have no upgradable cards!");
-                break;
-            } else {
-                System.out.print("What card would you like to upgrade? [number]: ");
-                input = scanner.nextLine().toLowerCase();
-
-                while (!isValidInput && !input.equals("x")) {
-                    try {
-                        cardNum = Integer.parseInt(input);
-                        isValidInput = upgdable.contains(cardNum);
-                    } catch (NumberFormatException e) {
-                        System.out.print("Please enter a valid card [number], or enter 'x' to exit: ");
-                        input = scanner.nextLine().toLowerCase();
-                        continue;
-                    }
-    
-                    if (!isValidInput) {
-                        System.out.print("Please enter a valid card [number], or enter 'x' to exit: ");
-                        input = scanner.nextLine().toLowerCase();
-                        continue;
-                    } else {
-                        Card c = player.getCards().get(cardNum-1);
-                        c.getTrait().upgrade();
-                        System.out.println("\n\tUpgraded " + c.getName() + "!");
-                        player.getCards().set(cardNum-1, c);
-                        player.getInventory().decnumUpgdCards();
-                    }
-                }
-            }
-        } while (!input.equals("x") && player.getInventory().getnumUpgdCards() != 0);
-
-        if (player.getInventory().getnumUpgdCards() == 0) { 
-            System.out.println("\n\tYou've used all your upgrade cards.\n");
-        } else {
-            System.out.println();
-        }
     }
         
     private static void roll(int diceRoll) {

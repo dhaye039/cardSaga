@@ -7,6 +7,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Scanner;
 
+import cardSaga.cells.AnvilCell;
 import cardSaga.cells.Cell;
 import cardSaga.cells.EnemyCell;
 import cardSaga.cells.ExitCell;
@@ -25,7 +26,7 @@ public class Maze {
     private int rows, cols;
     private int playerRow = 0;
     private int playerCol = 0;
-    private int exitRow, level;
+    private int exitRow, level, anvilUses;
     private boolean cardsInShop;
     private Player p;
 
@@ -37,6 +38,7 @@ public class Maze {
         this.p = p;
         this.level = level;
         this.cardsInShop = true;
+        this.anvilUses = 2;
 
         this.maze = new Cell[rows][cols];
         do {
@@ -48,8 +50,6 @@ public class Maze {
         Random random = new Random();
 
         int mobCap = ((rows * cols) / 25) + 1;
-        boolean shopPlaced = false;
-        int shopX, shopY;
 
         // Initialize the grid
         // This is where to add new cells
@@ -66,19 +66,9 @@ public class Maze {
                         maze[i][j] = new EnemyCell("goblin"); // 20% chance an enemy
                         --mobCap;
                     }
-                    if (shopPlaced) {
-
-                    }
                 }
             }
         }
-
-        do {
-            shopX = randBetween(0, 4);
-            shopY = randBetween(0, 4);
-        } while (maze[shopX][shopY].getVal() == PLAYER_ICON || maze[shopX][shopY] instanceof ExitCell);
-
-        maze[shopX][shopY] = new ShopCell();
 
         // Set start and exit positions
         maze[0][0].setVal(PLAYER_ICON);
@@ -86,6 +76,11 @@ public class Maze {
         // Place exit in random last column row
         this.exitRow = random.nextInt(rows);
         maze[exitRow][cols - 1] = new ExitCell();
+
+        // Place special cells
+        placeCell(new ShopCell());
+        // if (level > 0) 
+        placeCell(new AnvilCell());
 
         return maze;
     }
@@ -165,7 +160,12 @@ public class Maze {
             if (cardsInShop)
                 visitShop(p);
             else 
-                System.out.println("\n\tThere are currently no cards in the shop.\n");
+                System.out.println("\tThere are currently no cards in the shop.\n");
+        } else if (maze[newRow][newCol] instanceof AnvilCell) {
+            if (p.getInventory().getnumUpgdCards() == 0)
+                System.out.println("\tYou have no Upgrade Cards.\n");
+            else 
+                upgdCard(p);
         }
 
         // Check if the new position is within bounds and is a path
@@ -173,6 +173,11 @@ public class Maze {
                 && !(maze[newRow][newCol] instanceof WallCell)) {
             if (maze[playerRow][playerCol] instanceof ShopCell) {
                 maze[playerRow][playerCol].setVal('s');
+            } else if (maze[playerRow][playerCol] instanceof AnvilCell && anvilUses != 0) {
+                if (anvilUses == 2)
+                    maze[playerRow][playerCol].setVal('n');
+                else
+                    maze[playerRow][playerCol].setVal('r');
             } else {
                 maze[playerRow][playerCol] = new PathCell(); // Clear previous player position
             }
@@ -184,13 +189,9 @@ public class Maze {
 
         return false;
     }
-
-    public boolean isAtExit() {
-        return maze[playerRow][playerCol] instanceof ExitCell;
-    }
-
-    
-    public void visitShop(Player player) {
+        
+    // special cell stuff
+    private void visitShop(Player player) {
         List<Card> shop = masterlist.getShop();
         Inventory pInventory = player.getInventory();
         String input = "";
@@ -249,6 +250,86 @@ public class Maze {
 
     }
 
+    private void upgdCard(Player player) {
+
+        Inventory inventory = player.getInventory();
+        String input = "";
+
+        do {
+            List<Integer> upgdable = inventory.getUpgdable();
+            int cardNum = -1;
+            boolean isValidInput = false;
+
+            if (upgdable.isEmpty()) {
+                System.out.println("\tYou have no upgradable cards!");
+                break;
+            } else {
+                System.out.print("What card would you like to upgrade? [number]: ");
+                input = scanner.nextLine().toLowerCase();
+
+                while (!isValidInput && !input.equals("x")) {
+                    try {
+                        cardNum = Integer.parseInt(input);
+                        isValidInput = upgdable.contains(cardNum);
+                    } catch (NumberFormatException e) {
+                        System.out.print("Please enter a valid card [number], or enter 'x' to exit: ");
+                        input = scanner.nextLine().toLowerCase();
+                        continue;
+                    }
+    
+                    if (!isValidInput) {
+                        System.out.print("Please enter a valid card [number], or enter 'x' to exit: ");
+                        input = scanner.nextLine().toLowerCase();
+                        continue;
+                    } else {
+                        Card c = player.getCards().get(cardNum-1);
+                        c.getTrait().upgrade();
+                        System.out.println("\n\tUpgraded " + c.getName() + "!");
+                        player.getCards().set(cardNum-1, c);
+                        player.getInventory().decnumUpgdCards();
+                        --anvilUses;
+                    }
+                }
+            }
+        } while (!input.equals("x") && player.getInventory().getnumUpgdCards() != 0);
+
+        if (player.getInventory().getnumUpgdCards() == 0) { 
+            System.out.println("\n\tYou've used all your upgrade cards.\n");
+        } else {
+            System.out.println();
+        }
+    }
+    
+    // logic/functional methods
+    private int randBetween(int min, int max) {
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
+        
+        Random random = new Random();
+        return random.nextInt((max - min) + 1) + min;
+    }
+    
+    private void placeCell(Cell cell) {
+        int cellRow, cellCol;
+
+        do {
+            cellRow = randBetween(0, rows - 1);
+            cellCol = randBetween(0, cols - 1);
+        } while (
+            maze[cellRow][cellCol].getVal() == PLAYER_ICON 
+         || maze[cellRow][cellCol] instanceof ExitCell
+         || maze[cellRow][cellCol] instanceof ShopCell
+         || maze[cellRow][cellCol] instanceof AnvilCell
+        );
+
+        if (cell instanceof ShopCell)
+            maze[cellRow][cellCol] = new ShopCell();
+        else if (cell instanceof AnvilCell)
+            maze[cellRow][cellCol] = new AnvilCell();
+    }
+
+    // UI stuff
     public void print() {
         // Print the generated maze
         // System.out.println();
@@ -262,13 +343,10 @@ public class Maze {
         System.out.println();
     }
 
-    public int randBetween(int min, int max) {
-        if (min >= max) {
-            throw new IllegalArgumentException("max must be greater than min");
-        }
-        
-        Random random = new Random();
-        return random.nextInt((max - min) + 1) + min;
+    public boolean isAtExit() {
+        return maze[playerRow][playerCol] instanceof ExitCell;
     }
+   
+
 }
 

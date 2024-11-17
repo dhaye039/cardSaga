@@ -56,7 +56,7 @@ public class Inventory {
         List<Integer> upgdable = new ArrayList<>();
         int i = 0;
 
-        System.out.println("\n\tUpgrade Cards: " + numUpgdCards);
+        System.out.println("\tUpgrade Cards: " + numUpgdCards);
         System.out.println("\n\tUpgrade Selection:");
         for (var card : cards) {
             System.out.print(String.format("\tCard [%d] %s", ++i, card.name));
