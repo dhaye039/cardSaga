@@ -140,7 +140,7 @@ public class Fight {
                     p.getCards().add(mirrorCard);
                 }
 
-                if (rand.nextInt(100) == 50) {
+                if (rand.nextInt(100) <= 20) {
                     p.inventory.incnumUpgdCards();
                     System.out.println("Enemy dropped an upgrade card!");
                 }

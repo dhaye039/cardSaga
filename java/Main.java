@@ -132,7 +132,7 @@ public class Main {
         String turn = scanner.nextLine().toLowerCase();
 
         while (!validOptions.contains(turn)) {
-            System.out.print("Please enter 'e', 'i', 'm', 'r', 's', or 'u': ");
+            System.out.print("Please enter 'e', 'i', 'm', or 'r': ");
             turn = scanner.nextLine();
         }
         return turn;
