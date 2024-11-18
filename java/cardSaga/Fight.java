@@ -206,7 +206,7 @@ public class Fight {
                 return card;
             }
         }
-        return null; // TODO: This breaks sometimes?
+        return null;
     }
 
     private int calcDmg(Card card, int TotDmg) {

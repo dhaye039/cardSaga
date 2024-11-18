@@ -1,8 +1,6 @@
 package cardSaga.cells;
 
 import cardSaga.Enemy;
-import cardSaga.Fight;
-import cardSaga.Player;
 
 public class EnemyCell extends Cell {
 

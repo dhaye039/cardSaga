@@ -6,7 +6,6 @@ public class Player extends Entity {
 
     Inventory inventory;
     int hp;
-    int level;
     int xp;
     int maxHp = 100;
 
@@ -14,7 +13,6 @@ public class Player extends Entity {
         super(entityType);
         this.inventory = new Inventory(entityType, 1, 10);
         this.hp = 100;
-        // this.level = 12;
         this.xp = 0;
     }
     
@@ -44,11 +42,7 @@ public class Player extends Entity {
             
         System.out.println("\t  Gold: " + inventory.gold);
         System.out.println("\t  Upgrade Cards: " + inventory.numUpgdCards);
-        System.out.println();
-
-        // System.out.println("\t  xp -" + xp + "-");
-        // System.out.println("\t  Level -" + calcLevel() + "-\n");
-        
+        System.out.println();        
     }
 
     private StringBuilder calcHealth() {
@@ -99,17 +93,6 @@ public class Player extends Entity {
         bar.insert(6, String.valueOf(level));
 
         return bar.toString();
-    }
-    
-    public int calcLevel() {
-        level = (int) Math.sqrt(xp);
-
-        double filledLength = (double) (((double)xp / (double)(level*level)) * 10);
-        double emptyLength = 10 - filledLength;
-
-
-
-        return level;
     }
 
     public void incXP(int xp) {

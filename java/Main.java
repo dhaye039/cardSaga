@@ -1,7 +1,6 @@
 import java.util.*;
 
 import cardSaga.*;
-import cardSaga.cells.Cell;
 
 public class Main {
 
@@ -29,20 +28,27 @@ public class Main {
             System.out.println("\t\t\t\t\t    Turn " + turn + "\n");
             System.out.println("\t\t\t\t\t   Level  " + level + "\n");
             System.out.println("Current Options: ");
-            System.out.println("Check [I]nventory | [M]ove | [E]xit Game\n");
-
-            System.out.println("\nLevel " + level + " Map:\n");
-            maze.print();
+            System.out.println("Check [I]nventory | [M]ove | E[x]it Game\n");
             
-            switch (procTurn()) {
+            System.out.println("Level " + level + " Map:\n");
+            maze.print();
+
+            String strTurn = procTurn();
+            
+            switch (strTurn) {
                 case "i":
                     p.viewInventory();
                     break;
-                case "m":  
-                    move(p);
+
+                case "w":
+                case "a":
+                case "s":
+                case "d":
+                case "m":
+                    move(p, strTurn);
                     ++turn;
                     break;
-                case "e":
+                case "x":
                     System.out.println();
                     gameover = true;
                     break;
@@ -105,10 +111,14 @@ public class Main {
     private static String procTurn() {
 
         List<String> validOptions = new ArrayList<>(Arrays.asList(
-            "e"     // exit
+            "x"     // exit
             // , "f"   // fight
             , "i"   // inventory
             , "m"   // move
+            , "w"
+            , "a"
+            , "s"
+            , "d"
             // , "r"   // roll
             // , "s"   // shop
             // , "u"   // upgrade
@@ -119,34 +129,41 @@ public class Main {
         String turn = scanner.nextLine().toLowerCase();
 
         while (!validOptions.contains(turn)) {
-            System.out.print("Please enter 'e', 'i', or 'm': ");
+            System.out.print("Please enter 'i', 'm', or 'x': ");
             turn = scanner.nextLine();
         }
         return turn;
     }
         
-    private static void move(Player p) {
+    private static void move(Player p, String strTurn) {
         String dir;
 
         List<String> dirOptions = new ArrayList<>(Arrays.asList(
-            "w", "a", "s", "d", "e"
+            "w", "a", "s", "d", "x"
         ));
 
         System.out.println();
-        maze.print();
+        // maze.print();
 
         while (true) {
-            System.out.print("Key - up [w] | down [s] | left [a] | right [d]\nEnter a Direction or press [e] return to option screen: ");
-            dir = scanner.nextLine().toLowerCase();
-            while(!dirOptions.contains(dir)) {
-                System.out.print("Please enter a valid a direction (w, s, a, d) or 'e': ");
+            if (strTurn.equals("m")) {
+                System.out.print("Key - up [w] | down [s] | left [a] | right [d]\nEnter a Direction or press [x] to return to the option screen: ");
                 dir = scanner.nextLine().toLowerCase();
-            }
-
-            System.out.println();
-
-            if (dir.equals("e")) {
-                return;
+                dir = dir.isEmpty() ? "" : String.valueOf(dir.charAt(dir.length() - 1));
+                while(!dirOptions.contains(dir)) {
+                    System.out.print("Please enter a valid a direction (w, s, a, d) or 'x': ");
+                    dir = scanner.nextLine().toLowerCase();
+                    dir = dir.isEmpty() ? "" : String.valueOf(dir.charAt(dir.length() - 1));
+                }
+    
+                System.out.println();
+    
+                if (dir.equals("x")) {
+                    return;
+                }
+            } else {
+                dir = strTurn;
+                strTurn = "m";
             }
 
             if (maze.movePlayer(dir, turn)) {
@@ -164,7 +181,7 @@ public class Main {
                         maze.setPlayerAtEntrance();
                         currMazeLvlIdx++;
                     }
-                    return;
+                    // return;
                 } else if (maze.isAtEntrance()) {
                     System.out.println("\nLevel " + currMazeLvlIdx + " Map:\n");
                     maze = mazeList.get(currMazeLvlIdx - 1);

@@ -85,8 +85,9 @@ public class Maze {
 
         // Place special cells
         placeCell(new ShopCell());
-        // if (level > 0) 
-        placeCell(new AnvilCell());
+
+        if (level > 0) 
+            placeCell(new AnvilCell());
 
         return maze;
     }
@@ -148,8 +149,7 @@ public class Maze {
         }
 
         // Check if the new position is within bounds and is a path
-        if (newRow >= 0 && newRow < maze.length && newCol >= 0 && newCol < maze[0].length 
-            && !(maze[newRow][newCol] instanceof WallCell)) {
+        if (newRow >= 0 && newRow < maze.length && newCol >= 0 && newCol < maze[0].length) {
 
             if (maze[newRow][newCol] instanceof EnemyCell) {
                 Enemy enemy = ((EnemyCell) maze[newRow][newCol]).getEnemy();
@@ -168,7 +168,7 @@ public class Maze {
             } else if (maze[newRow][newCol] instanceof ShopCell) {
                 // TODO: add y/n enter shop
                 if (cardsInShop)
-                    visitShop(p, (ShopCell) maze[newRow][newCol]);
+                    ((ShopCell) maze[newRow][newCol]).visitShop(p);
                 else 
                     System.out.println("\tThere are currently no cards in the shop.\n");
             } else if (maze[newRow][newCol] instanceof AnvilCell) {
@@ -176,8 +176,11 @@ public class Maze {
                     System.out.println("\tYou have no Upgrade Cards.\n");
                 else 
                     upgdCard(p);
+            } else if (maze[newRow][newCol] instanceof WallCell) {
+                System.out.println("Mining wall...\n");
+                waiting(((WallCell)maze[newRow][newCol]).getToughness() * 40);
             }
-
+            
             if (maze[playerRow][playerCol] instanceof ShopCell) {
                 maze[playerRow][playerCol].setVal('s');
             } else if (maze[playerRow][playerCol] instanceof AnvilCell && anvilUses != 0) {
@@ -188,11 +191,12 @@ public class Maze {
             } else if (maze[playerRow][playerCol] instanceof EntranaceCell
                     || maze[playerRow][playerCol] instanceof ExitCell) {
                 maze[playerRow][playerCol].setVal('o');
-            }
-            
-            else {
+            } else if (maze[playerRow][playerCol] instanceof WallCell) {
+                maze[playerRow][playerCol].setVal(',');
+            } else {
                 maze[playerRow][playerCol] = new PathCell(); // Clear previous player position
             }
+
             playerRow = newRow;
             playerCol = newCol;
             maze[playerRow][playerCol].setVal(PLAYER_ICON); // Update new player position
@@ -203,65 +207,6 @@ public class Maze {
     }
         
     // special cell stuff
-    private void visitShop(Player player, ShopCell sc) {
-        List<Card> shop = sc.getShop();
-        Inventory pInventory = player.getInventory();
-        String input = "";
-
-        System.out.println("\n\tWelcome to the Shop!");
-
-        do {
-            List<Integer> buyable = new ArrayList<>();
-            int i = 0;
-            Inventory inven = player.getInventory();
-            int playerGold = inven.getGold();
-            boolean isValidInput = false;
-            boolean afrdable = false;
-            int cardNum = -1;
-
-            for (var card : shop) {
-                System.out.println(String.format("\n\tCard [%d]: %s (%d dmg) -- %s\n\tCost: %d gold", ++i, card.getName(), card.getDmg(), card.getTrait().getDesc(), card.getCost()));
-                buyable.add(i);
-            }
-            System.out.println("\n\tYou have " + playerGold + " gold. Enter 'x' to Exit.\n");
-            
-            System.out.print("What would you like to buy? [number]: ");
-            input = scanner.nextLine().toLowerCase();
-
-            while (!isValidInput && !afrdable && !input.equals("x")) { // while input isn't valid and card isn't affordable
-                try {
-                    cardNum = Integer.parseInt(input);
-                    isValidInput = buyable.contains(cardNum);
-                } catch (NumberFormatException e) {
-                    System.out.print("Please enter a valid card [number], or enter 'x' to exit: ");
-                    input = scanner.nextLine().toLowerCase();
-                    continue;
-                }
-
-                if (!isValidInput) {
-                    System.out.print("Please enter a valid card [number], or enter 'x' to exit: ");
-                    input = scanner.nextLine().toLowerCase();
-                    continue;
-                }
-
-                Card reqCard = shop.get(cardNum-1);
-
-                if (playerGold >= reqCard.getCost()) { // buy card
-                    pInventory.addCard(shop.remove(cardNum-1));
-                    inven.addGold(reqCard.getCost() * (-1));
-                    if (shop.size() == 0) cardsInShop = false;
-                } else {
-                    System.out.print("\n\tYou do not have enough gold to buy this card.\n\nPlease enter a valid card [number], or enter 'x' to exit: ");
-                    input = scanner.nextLine().toLowerCase();
-                    afrdable = false;
-                }
-            }
-        } while (!input.equals("x") && cardsInShop);
-        if (!cardsInShop) System.out.println("\n\tThere are no more cards in the shop. Come back later!");
-        System.out.println();
-
-    }
-
     private void upgdCard(Player player) {
 
         Inventory inventory = player.getInventory();
@@ -279,7 +224,7 @@ public class Maze {
                 System.out.print("What card would you like to upgrade? [number]: ");
                 input = scanner.nextLine().toLowerCase();
 
-                while (!isValidInput && !input.equals("x")) {
+                while (!isValidInput && !input.equals("x") && (anvilUses > 0)) {
                     try {
                         cardNum = Integer.parseInt(input);
                         isValidInput = upgdable.contains(cardNum);
@@ -303,7 +248,7 @@ public class Maze {
                     }
                 }
             }
-        } while (!input.equals("x") && player.getInventory().getnumUpgdCards() != 0);
+        } while (!input.equals("x") && player.getInventory().getnumUpgdCards() != 0 && (anvilUses > 0));
 
         if (player.getInventory().getnumUpgdCards() == 0) { 
             System.out.println("\n\tYou've used all your upgrade cards.\n");
@@ -341,6 +286,14 @@ public class Maze {
             maze[cellRow][cellCol] = new AnvilCell();
     }
 
+    private void waiting(int millis) {
+        try {
+            Thread.sleep(millis); // Pauses for 1 second (1000 milliseconds)
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     // UI stuff
     public void print() {
         // Print the generated maze
@@ -375,6 +328,5 @@ public class Maze {
         return maze[playerRow][playerCol] instanceof EntranaceCell;
     }
    
-
 }
 
