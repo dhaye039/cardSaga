@@ -1,6 +1,7 @@
 import java.util.*;
 
 import cardSaga.*;
+import cardSaga.cells.Cell;
 
 public class Main {
 
@@ -8,10 +9,11 @@ public class Main {
     static Random rand = new Random();
     static MasterList MasterList = cardSaga.MasterList.getInstance(); 
     // static Maze maze = new Maze(11, 11);
-    public static int level = 1, turn = 1;
+    public static int level = 1, currMazeLvlIdx = 0, turn = 1;
     static int rows = 5, cols = 4; // set to 4 but will get incremented to 5
     static Maze maze;
     static boolean cardsInShop = true, isLevelCompleted = false;
+    static ArrayList<Maze> mazeList = new ArrayList<>();
 
     public static void main(String[] args) {
         boolean gameover = false;
@@ -27,14 +29,9 @@ public class Main {
             System.out.println("\t\t\t\t\t    Turn " + turn + "\n");
             System.out.println("\t\t\t\t\t   Level  " + level + "\n");
             System.out.println("Current Options: ");
-            System.out.println("Check [I]nventory | View [M]ap | [M]ove | [E]xit Game\n");
-            
-            if (isLevelCompleted) {
-                MasterList.populateShop();
-                cardsInShop = true;
-                generateLevel(p);
-            }
+            System.out.println("Check [I]nventory | [M]ove | [E]xit Game\n");
 
+            System.out.println("\nLevel " + level + " Map:\n");
             maze.print();
             
             switch (procTurn()) {
@@ -42,19 +39,9 @@ public class Main {
                     p.viewInventory();
                     break;
                 case "m":  
-                    move();
+                    move(p);
                     ++turn;
                     break;
-                // case "u":
-                    // if (p.getInventory().getnumUpgdCards() == 0)
-                    //     System.out.println("\n\tYou have no Upgrade Cards.\n");
-                    // else 
-                    //     upgdCard(p);
-                    // break;
-                // case "m":
-                //     System.out.println("\nLevel " + level + " Map:\n");
-                //     maze.print();
-                //     break;
                 case "e":
                     System.out.println();
                     gameover = true;
@@ -63,9 +50,7 @@ public class Main {
                     System.out.println("Not implemented yet.");
             }
 
-
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-
 
             numTurn++;
             // gameover = true;
@@ -97,6 +82,7 @@ public class Main {
         Player p = new Player(playerType);
 
         generateLevel(p);
+        mazeList.add(maze);
 
         return p;
     }
@@ -108,6 +94,9 @@ public class Main {
             rows += 2;
             cols = rows;
         }
+        
+        MasterList.populateShop();
+        cardsInShop = true;
 
         maze = new Maze(rows, cols, players[0], level);
         isLevelCompleted = false;
@@ -130,19 +119,20 @@ public class Main {
         String turn = scanner.nextLine().toLowerCase();
 
         while (!validOptions.contains(turn)) {
-            System.out.print("Please enter 'e', 'i', 'm', or 'r': ");
+            System.out.print("Please enter 'e', 'i', or 'm': ");
             turn = scanner.nextLine();
         }
         return turn;
     }
         
-    private static void move() {
+    private static void move(Player p) {
         String dir;
 
         List<String> dirOptions = new ArrayList<>(Arrays.asList(
             "w", "a", "s", "d", "e"
         ));
 
+        System.out.println();
         maze.print();
 
         while (true) {
@@ -161,10 +151,25 @@ public class Main {
 
             if (maze.movePlayer(dir, turn)) {
                 if (maze.isAtExit()) {
-                    System.out.println("Congratulations! You've reached the exit!\n");
-                    isLevelCompleted = true;
-                    level++;
+                    // System.out.println("You've reached the exit\n");
+
+                    // check if player is on most recently generated maze
+                    if (level == (currMazeLvlIdx + 1)) {
+                        level++; currMazeLvlIdx++;
+                        generateLevel(p);
+                        mazeList.add(maze);
+                    } else {
+                        System.out.println("\nLevel " + (currMazeLvlIdx + 1) + " Map:\n");
+                        maze = mazeList.get(currMazeLvlIdx + 1);
+                        maze.setPlayerAtEntrance();
+                        currMazeLvlIdx++;
+                    }
                     return;
+                } else if (maze.isAtEntrance()) {
+                    System.out.println("\nLevel " + currMazeLvlIdx + " Map:\n");
+                    maze = mazeList.get(currMazeLvlIdx - 1);
+                    maze.setPlayerAtExit();
+                    currMazeLvlIdx--;
                 }
             } else {
                 System.out.println("Can't move in that direction.\n");

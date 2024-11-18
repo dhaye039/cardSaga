@@ -10,6 +10,7 @@ import java.util.Scanner;
 import cardSaga.cells.AnvilCell;
 import cardSaga.cells.Cell;
 import cardSaga.cells.EnemyCell;
+import cardSaga.cells.EntranaceCell;
 import cardSaga.cells.ExitCell;
 import cardSaga.cells.PathCell;
 import cardSaga.cells.ShopCell;
@@ -26,7 +27,7 @@ public class Maze {
     private int rows, cols;
     private int playerRow = 0;
     private int playerCol = 0;
-    private int exitRow, level, anvilUses;
+    private int exitRow, exitCol, level, anvilUses;
     private boolean cardsInShop;
     private Player p;
 
@@ -70,11 +71,16 @@ public class Maze {
             }
         }
 
+        if (level > 1) {
+            maze[0][0] = new EntranaceCell();
+        }
+
         // Set start and exit positions
         maze[0][0].setVal(PLAYER_ICON);
 
         // Place exit in random last column row
         this.exitRow = random.nextInt(rows);
+        this.exitCol = cols - 1;
         maze[exitRow][cols - 1] = new ExitCell();
 
         // Place special cells
@@ -162,7 +168,7 @@ public class Maze {
             } else if (maze[newRow][newCol] instanceof ShopCell) {
                 // TODO: add y/n enter shop
                 if (cardsInShop)
-                    visitShop(p);
+                    visitShop(p, (ShopCell) maze[newRow][newCol]);
                 else 
                     System.out.println("\tThere are currently no cards in the shop.\n");
             } else if (maze[newRow][newCol] instanceof AnvilCell) {
@@ -179,7 +185,12 @@ public class Maze {
                     maze[playerRow][playerCol].setVal('n');
                 else
                     maze[playerRow][playerCol].setVal('r');
-            } else {
+            } else if (maze[playerRow][playerCol] instanceof EntranaceCell
+                    || maze[playerRow][playerCol] instanceof ExitCell) {
+                maze[playerRow][playerCol].setVal('o');
+            }
+            
+            else {
                 maze[playerRow][playerCol] = new PathCell(); // Clear previous player position
             }
             playerRow = newRow;
@@ -192,8 +203,8 @@ public class Maze {
     }
         
     // special cell stuff
-    private void visitShop(Player player) {
-        List<Card> shop = masterlist.getShop();
+    private void visitShop(Player player, ShopCell sc) {
+        List<Card> shop = sc.getShop();
         Inventory pInventory = player.getInventory();
         String input = "";
 
@@ -344,8 +355,24 @@ public class Maze {
         System.out.println();
     }
 
+    public void setPlayerAtExit() {
+        playerRow = exitRow;
+        playerCol = exitCol;
+        maze[playerRow][playerCol].setVal(PLAYER_ICON);
+    }
+    
     public boolean isAtExit() {
         return maze[playerRow][playerCol] instanceof ExitCell;
+    }
+
+    public void setPlayerAtEntrance() {
+        playerRow = 0;
+        playerCol = 0;
+        maze[playerRow][playerCol].setVal(PLAYER_ICON);
+    }
+
+    public boolean isAtEntrance() {
+        return maze[playerRow][playerCol] instanceof EntranaceCell;
     }
    
 
