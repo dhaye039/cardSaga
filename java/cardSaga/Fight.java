@@ -67,49 +67,53 @@ public class Fight {
             System.out.println("\nPlayer's drawings:"); waiting(1000);
 
             do {
-                do { 
-                    pCard = spinWheel(p.getCards());
-                } while (pCard.name.equals("Crit Potion") && flags.pUsedCrit == true);
-
-                if (pCard.name.equals("Crit Potion")) { flags.pUsedCrit = true; }
-
+                pCard = spinWheel(p.getCards());
+                
+                if (pCard.name.equals("Crit Potion") && flags.pUsedCrit) continue;
+                if (pCard.name.equals("Crit Potion")) flags.pUsedCrit = true;
+        
                 if (pCard.affectOpp) {
                     eTotDmg = calcDmg(pCard, eTotDmg);
                 } else {
                     pTotDmg = calcDmg(pCard, pTotDmg);
                 }
+        
                 pTurn += String.format("\n\t+%d dmg - %s: %s", pCard.getDmg(), pCard.name, pCard.trait.getDesc());
                 
+                // Apply trait effects
                 Trait check = pCard.getTrait();
                 if (!(check instanceof EnemyWeaponTrait || check instanceof RobCon || check instanceof StealCon)) 
                     apply(pCard, e);
-
+        
                 reroll = pCard.reroll;
+
             } while (reroll);
             System.out.println(pTurn + "\n"); 
 
             System.out.println("-------------------------------------------------\n"); waiting(500);
 
+            flags.reset(flags.pUsedCrit, flags.eUsedCrit);
+
             // Enemy's turn
             System.out.println("Enemy's drawings:"); waiting(1000);
-
             do {
-                do { 
-                    eCard = spinWheel(e.getCards());
-                } while (
-                    eCard.name.equals("Crit Potion") && flags.eUsedCrit == true
-                );
-
-                if (eCard.name.equals("Crit Potion")) { flags.eUsedCrit = true; }
-
+                eCard = spinWheel(e.getCards());
+                
+                if (eCard.name.equals("Crit Potion") && flags.eUsedCrit) continue;
+                if (eCard.name.equals("Crit Potion")) flags.eUsedCrit = true;
+        
                 if (eCard.affectOpp) {
                     pTotDmg = calcDmg(eCard, pTotDmg);
                 } else {
                     eTotDmg = calcDmg(eCard, eTotDmg);
                 }
+        
                 eTurn += String.format("\n\t+%d dmg - %s: %s", eCard.getDmg(), eCard.name, eCard.trait.getDesc());
+                
                 reroll = eCard.reroll;
+
             } while (reroll);
+          
             System.out.println(eTurn + "\n");
 
             System.out.println("-------------------------------------------------\n"); waiting(500);
@@ -123,7 +127,14 @@ public class Fight {
 
             // Compare total damages
             if (pTotDmg > eTotDmg) { // player wins
-                System.out.println("\tYou defeated the enemy and moved into their space!\n\tEnemy dropped " + e.gold + " gold.\n");
+                String strUgdCard = "";
+
+                if (rand.nextInt(100) <= 20) {
+                    p.inventory.incnumUpgdCards();
+                    strUgdCard = "\tEnemy dropped an upgrade card!\n";
+                }
+
+                System.out.println("\tYou defeated the enemy and moved into their space!\n\tEnemy dropped " + e.gold + " gold.\n" + strUgdCard);
 
                 if (pCard.getTrait() instanceof EnemyWeaponTrait) 
                     apply(pCard, e);
@@ -138,11 +149,6 @@ public class Fight {
                     Card mirrorCard = eCard;
                     mirrorCard.setBorrowed(true, numUses);
                     p.getCards().add(mirrorCard);
-                }
-
-                if (rand.nextInt(100) <= 20) {
-                    p.inventory.incnumUpgdCards();
-                    System.out.println("Enemy dropped an upgrade card!");
                 }
 
                 p.incXP(1);
@@ -210,20 +216,18 @@ public class Fight {
     }
 
     private int calcDmg(Card card, int TotDmg) {
-        int newDmg = 0;
-
+        int newDmg = TotDmg; // Start with existing total damage
+    
         Trait t = card.trait;
-
+    
         if (t instanceof StrengthTrait) {
-            newDmg = TotDmg + ((StrengthTrait)t).getMod();
+            newDmg += ((StrengthTrait) t).getMod(); // Add modifier
         } else if (t instanceof WeaknessTrait) {
-            newDmg = TotDmg - ((WeaknessTrait)t).getMod();
+            newDmg -= ((WeaknessTrait) t).getMod(); // Subtract modifier
         } else if (t instanceof CritTrait) {
-            newDmg = TotDmg * 2;
-        }
-        
-        else {
-            newDmg = TotDmg + card.getDmg();
+            flags.pUsedCrit = true; // Ensure Crit is used only once
+        } else {
+            newDmg += card.getDmg(); // Default damage
         }
     
         return newDmg;
@@ -263,7 +267,7 @@ public class Fight {
             }
             maxDmgCard.prob = maxDmgCard.prob * (float) 1.05;
         } else if (t instanceof CritTrait) {
-            p.inventory.remove(c); // gets added back next turn
+            // p.inventory.remove(c); // gets added back next turn
         } else if (t instanceof CloakTrait) {
             flags.useDodge = true;
         }

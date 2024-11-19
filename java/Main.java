@@ -7,15 +7,15 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
     static Random rand = new Random();
     static MasterList MasterList = cardSaga.MasterList.getInstance(); 
-    // static Maze maze = new Maze(11, 11);
-    public static int level = 1, currMazeLvlIdx = 0, turn = 1;
+    static int level = 1, currMazeLvlIdx = 0, turn = 1;
     static int rows = 5, cols = 4; // set to 4 but will get incremented to 5
     static Maze maze;
     static boolean cardsInShop = true, isLevelCompleted = false;
     static ArrayList<Maze> mazeList = new ArrayList<>();
+    static boolean gameover = false;
 
     public static void main(String[] args) {
-        boolean gameover = false;
+        
 
         // Start game
         Player p = startGame();
@@ -39,7 +39,6 @@ public class Main {
                 case "i":
                     p.viewInventory();
                     break;
-
                 case "w":
                 case "a":
                 case "s":
@@ -58,8 +57,11 @@ public class Main {
 
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
+            if (p.getHp() < 0) {
+                System.out.println("You died. :(");
+                gameover = true;
+            }
             numTurn++;
-            // gameover = true;
         }
 
         scanner.close();
@@ -139,13 +141,13 @@ public class Main {
         String dir;
 
         List<String> dirOptions = new ArrayList<>(Arrays.asList(
-            "w", "a", "s", "d", "x"
+            "w", "a", "s", "d", "x", "i"
         ));
 
         System.out.println();
         // maze.print();
 
-        while (true) {
+        while (!gameover) {
             if (strTurn.equals("m")) {
                 System.out.print("Key - up [w] | down [s] | left [a] | right [d]\nEnter a Direction or press [x] to return to the option screen: ");
                 dir = scanner.nextLine().toLowerCase();
@@ -158,9 +160,13 @@ public class Main {
     
                 System.out.println();
     
-                if (dir.equals("x")) {
+                if (dir.equals("x"))
                     return;
+
+                if (dir.equals("i")) {
+                    p.viewInventory(); maze.print(); continue; 
                 }
+
             } else {
                 dir = strTurn;
                 strTurn = "m";
@@ -187,12 +193,19 @@ public class Main {
                     maze = mazeList.get(currMazeLvlIdx - 1);
                     maze.setPlayerAtExit();
                     currMazeLvlIdx--;
+                } else {
+                    // u lost fight L
                 }
+
             } else {
-                System.out.println("Can't move in that direction.\n");
+                
             }
 
             maze.print();
+
+            if (p.getHp() <= 0) {
+                gameover = true;
+            }
         }
     }
 }

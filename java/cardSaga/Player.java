@@ -1,8 +1,10 @@
 package cardSaga;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class Player extends Entity {
+    private Scanner scanner = new Scanner(System.in);
 
     Inventory inventory;
     int hp;
@@ -42,7 +44,16 @@ public class Player extends Entity {
             
         System.out.println("\t  Gold: " + inventory.gold);
         System.out.println("\t  Upgrade Cards: " + inventory.numUpgdCards);
-        System.out.println();        
+        System.out.println(); 
+
+        String input;
+        
+        do {
+            System.out.print("Press 'x' to return: ");
+            input = scanner.nextLine().toLowerCase();
+        } while (!input.equals("x"));
+
+        System.out.println();
     }
 
     private StringBuilder calcHealth() {
@@ -97,6 +108,10 @@ public class Player extends Entity {
 
     public void incXP(int xp) {
         this.xp += xp;
+    }
+
+    public int getHp() {
+        return hp;
     }
 }
 

@@ -73,6 +73,8 @@ public class Maze {
 
         if (level > 1) {
             maze[0][0] = new EntranaceCell();
+        } else {
+            maze[0][0] = new PathCell();
         }
 
         // Set start and exit positions
@@ -151,19 +153,15 @@ public class Maze {
         // Check if the new position is within bounds and is a path
         if (newRow >= 0 && newRow < maze.length && newCol >= 0 && newCol < maze[0].length) {
 
+            // perform action
             if (maze[newRow][newCol] instanceof EnemyCell) {
                 Enemy enemy = ((EnemyCell) maze[newRow][newCol]).getEnemy();
                 boolean playerWon = new Fight(p, enemy, turn).startFight(); // Start with turn = 0
     
                 if (playerWon) {
                     System.out.println("You defeated the enemy and moved into their space!\n");
-                    maze[playerRow][playerCol] = new PathCell(); // Clear previous position
-                    playerRow = newRow;
-                    playerCol = newCol;
-                    maze[playerRow][playerCol] = new PathCell(); // Enemy "dies"
                 } else {
-                    // System.out.println("You lost the fight and stay in your current position.\n");
-                    return true;
+                    return false;
                 }
             } else if (maze[newRow][newCol] instanceof ShopCell) {
                 // TODO: add y/n enter shop
@@ -177,10 +175,27 @@ public class Maze {
                 else 
                     upgdCard(p);
             } else if (maze[newRow][newCol] instanceof WallCell) {
-                System.out.println("Mining wall...\n");
-                waiting(((WallCell)maze[newRow][newCol]).getToughness() * 40);
+                WallCell wall = (WallCell)maze[newRow][newCol];
+                int waitTime = wall.getToughness() * 40;
+                waitTime = waitTime / 4;
+                if (!wall.isMined()) {
+                    System.out.print("Mining wall"); waiting(waitTime);
+                    System.out.print("."); waiting(waitTime);
+                    System.out.print("."); waiting(waitTime);
+                    System.out.println("."); waiting(waitTime);
+                    wall.changeIsMined();
+
+                    int gold = wall.getGold();
+                    if (gold > 0) {
+                        System.out.println("You found " + gold + " gold in the wall!");
+                        p.inventory.addGold(wall.getGold());
+                    }
+
+                    System.out.print("\n");
+                }
             }
             
+            // Clear previous player position
             if (maze[playerRow][playerCol] instanceof ShopCell) {
                 maze[playerRow][playerCol].setVal('s');
             } else if (maze[playerRow][playerCol] instanceof AnvilCell && anvilUses != 0) {
@@ -188,13 +203,12 @@ public class Maze {
                     maze[playerRow][playerCol].setVal('n');
                 else
                     maze[playerRow][playerCol].setVal('r');
-            } else if (maze[playerRow][playerCol] instanceof EntranaceCell
-                    || maze[playerRow][playerCol] instanceof ExitCell) {
+            } else if (maze[playerRow][playerCol] instanceof EntranaceCell || maze[playerRow][playerCol] instanceof ExitCell) {
                 maze[playerRow][playerCol].setVal('o');
             } else if (maze[playerRow][playerCol] instanceof WallCell) {
                 maze[playerRow][playerCol].setVal(',');
-            } else {
-                maze[playerRow][playerCol] = new PathCell(); // Clear previous player position
+            } else /* (maze[playerRow][playerCol] instanceof PathCell) */ {
+                maze[playerRow][playerCol] = new PathCell(); 
             }
 
             playerRow = newRow;
@@ -202,7 +216,7 @@ public class Maze {
             maze[playerRow][playerCol].setVal(PLAYER_ICON); // Update new player position
             return true;
         }
-
+        System.out.println("Can't move in that direction.\n");
         return false;
     }
         
