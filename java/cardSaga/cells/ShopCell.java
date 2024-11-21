@@ -42,7 +42,7 @@ public class ShopCell extends Cell {
             int i = 0;
             Inventory inven = player.getInventory();
             int playerGold = inven.getGold();
-            boolean cardsInShop = !shop.isEmpty(); // Ensure cardsInShop is correctly set
+            cardsInShop = !shop.isEmpty(); // Ensure cardsInShop is correctly set
     
             for (var card : shop) {
                 System.out.println(String.format("\n\tCard [%d]: %s (%d dmg) -- %s\n\tCost: %d gold",
@@ -90,5 +90,8 @@ public class ShopCell extends Cell {
         }
         System.out.println();
     }
-    
+
+    public boolean isCardsInShop() {
+        return cardsInShop;
+    }
 }

@@ -244,6 +244,8 @@ public class Fight {
         // Player Traits 
         if (t instanceof WeaponTrait) {
             c.incDmg(((WeaponTrait)t).getMod());
+            int dmgCap = (p.level != 0) ? p.level * 10 : c.dmg;
+            if (c.dmg > dmgCap) c.dmg = dmgCap;
         } else if (t instanceof SheildTrait) {
             flags.pImmune = true;
         } else if (t instanceof MagicMirrorTrait) {

@@ -20,9 +20,10 @@ public class Card {
     boolean affectOpp;  // If the card affects the opposing player
     boolean isBorrowed; // If the card is currently being borrowed
     int numUses;        // how many times the card can be used
+    boolean buyable;    // if card is purchasable in the shop
 
 
-    public Card(String name, Type type, int dmg, Trait trait, boolean reroll, float prob, int cost, boolean affectOpp) {
+    public Card(String name, Type type, int dmg, Trait trait, boolean reroll, float prob, int cost, boolean affectOpp, boolean buyable) {
         this.name = name;
         this.type = type;
         this.dmg = dmg;
@@ -33,6 +34,7 @@ public class Card {
         this.affectOpp = affectOpp;
         this.isBorrowed = false;
         this.numUses = 0;
+        this.buyable = buyable;
     }
 
     public String getName() {

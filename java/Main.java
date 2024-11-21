@@ -28,7 +28,7 @@ public class Main {
             System.out.println("\t\t\t\t\t    Turn " + turn + "\n");
             System.out.println("\t\t\t\t\t   Level  " + level + "\n");
             System.out.println("Current Options: ");
-            System.out.println("Check [I]nventory | [M]ove | E[x]it Game\n");
+            System.out.println("Check [I]nventory | [H]elp | [M]ove | E[x]it Game\n");
             
             System.out.println("Level " + level + " Map:\n");
             maze.print();
@@ -38,6 +38,9 @@ public class Main {
             switch (strTurn) {
                 case "i":
                     p.viewInventory();
+                    break;
+                case "h":
+                    help();
                     break;
                 case "w":
                 case "a":
@@ -115,6 +118,7 @@ public class Main {
         List<String> validOptions = new ArrayList<>(Arrays.asList(
             "x"     // exit
             // , "f"   // fight
+            , "h"   // help
             , "i"   // inventory
             , "m"   // move
             , "w"
@@ -131,7 +135,7 @@ public class Main {
         String turn = scanner.nextLine().toLowerCase();
 
         while (!validOptions.contains(turn)) {
-            System.out.print("Please enter 'i', 'm', or 'x': ");
+            System.out.print("Please enter 'i', 'h', 'm', or 'x': ");
             turn = scanner.nextLine();
         }
         return turn;
@@ -207,5 +211,59 @@ public class Main {
                 gameover = true;
             }
         }
+    }
+
+    private static void help() {
+        String help = """
+
+        ----------------------------------------------------------------------------------------------------
+        
+                                                    Help Page:
+        Description:
+            Card Saga is a turn based rogue-like where you try to make it as far as you can into the maze!
+
+            Each level increases in size and monster count, and monsters grow stronger with each new level,
+            with bosses on every 5th level. 
+        
+        Fighting:
+            For every enemy encounter, you will randomly draw cards that determine your damage (the enemy
+            will do the same). Upon defeat, the enemy's card trait will be applied to you, otherwise, you
+            will not receive consequences aside from health decrements. Certain cards have certain affects
+            that will allow you to redraw a card from your inventory, while affecting player/enemy damage.
+
+        Health:
+            Health is gain/lost via enemy encounters: 
+                health gain/lost = player damage - enemy damage
+
+        Cards:
+            Cards contain a unique trait that is applied when fighting enemies.
+
+        Map Key:
+            P - player (you)
+            . - path
+            X - wall
+            , - broken wall path
+            o - entrance/exit (exits always appear on the last column)
+            e - enemy
+            b - boss
+            s - shop
+            n - anvil
+            r - broken anvil
+
+        Controls:
+            m - move
+            w - up
+            a - left
+            s - down
+            d - right
+            x - go back/exit
+            i - inventory
+                """;
+        System.out.println(help);
+        String input;
+        do {
+            System.out.print("Enter x to return: ");
+            input = scanner.nextLine().toLowerCase();
+        } while (!input.equals("x"));
     }
 }

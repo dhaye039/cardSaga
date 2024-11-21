@@ -82,7 +82,7 @@ public class Inventory {
     }
 
     public void addCard(Card c) {
-        cards.add(c);
+        cards.add(masterList.lookup(c.name));
     }
 
     public void remove(Card c) {

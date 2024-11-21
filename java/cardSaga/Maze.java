@@ -1,6 +1,5 @@
 package cardSaga;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -21,7 +20,7 @@ public class Maze {
     private Scanner scanner = new Scanner(System.in);
     MasterList masterlist = MasterList.getInstance();
 
-    private static final char PLAYER_ICON = 'p';
+    private static final char PLAYER_ICON = 'P';
 
     private Cell[][] maze;
     private int rows, cols;
@@ -30,8 +29,6 @@ public class Maze {
     private int exitRow, exitCol, level, anvilUses;
     private boolean cardsInShop;
     private Player p;
-
-
 
     public Maze(int rows, int cols, Player p, int level) {
         this.rows = rows;
@@ -50,7 +47,7 @@ public class Maze {
     public Cell[][] generateMaze() {
         Random random = new Random();
 
-        int mobCap = ((rows * cols) / 25) + 1;
+        int mobCap = ((rows * cols) / 8);
 
         // Initialize the grid
         // This is where to add new cells
@@ -71,14 +68,15 @@ public class Maze {
             }
         }
 
+        // Set start and exit positions
         if (level > 1) {
             maze[0][0] = new EntranaceCell();
+            maze[0][0].setVal(PLAYER_ICON);
+            // playerRow = exitRow;
         } else {
             maze[0][0] = new PathCell();
+            maze[0][0].setVal(PLAYER_ICON);
         }
-
-        // Set start and exit positions
-        maze[0][0].setVal(PLAYER_ICON);
 
         // Place exit in random last column row
         this.exitRow = random.nextInt(rows);
@@ -88,7 +86,7 @@ public class Maze {
         // Place special cells
         placeCell(new ShopCell());
 
-        if (level > 0) 
+        if (level > 1) 
             placeCell(new AnvilCell());
 
         return maze;
@@ -102,7 +100,7 @@ public class Maze {
         Queue<int[]> queue = new LinkedList<>();
 
         // Start from the start position
-        queue.add(new int[] {0, 0});
+        queue.add(new int[] {exitRow, 0});
         visited[0][0] = true;
 
         // BFS directions for up, down, left, right
@@ -164,11 +162,22 @@ public class Maze {
                     return false;
                 }
             } else if (maze[newRow][newCol] instanceof ShopCell) {
-                // TODO: add y/n enter shop
-                if (cardsInShop)
-                    ((ShopCell) maze[newRow][newCol]).visitShop(p);
-                else 
-                    System.out.println("\tThere are currently no cards in the shop.\n");
+                ShopCell shop = ((ShopCell) maze[newRow][newCol]);
+                // String input;
+                // do {
+                //     System.out.print("would you like to enter the shop? (e/x): ");
+                //     input = scanner.nextLine().toLowerCase();
+                // } while (!(input.equals("e") || input.equals("x")));
+
+                // if (input.equals("e")) {
+                    if (shop.isCardsInShop())
+                        ((ShopCell) maze[newRow][newCol]).visitShop(p);
+                    else 
+                        System.out.println("\tThere are currently no cards in the shop.\n");
+                // } else {
+                //     System.out.println();
+                // }
+                
             } else if (maze[newRow][newCol] instanceof AnvilCell) {
                 if (p.getInventory().getnumUpgdCards() == 0)
                     System.out.println("\tYou have no Upgrade Cards.\n");
@@ -182,7 +191,8 @@ public class Maze {
                     System.out.print("Mining wall"); waiting(waitTime);
                     System.out.print("."); waiting(waitTime);
                     System.out.print("."); waiting(waitTime);
-                    System.out.println("."); waiting(waitTime);
+                    System.out.print("."); waiting(waitTime);
+                    System.out.println();
                     wall.changeIsMined();
 
                     int gold = wall.getGold();

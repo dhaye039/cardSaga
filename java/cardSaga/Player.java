@@ -10,6 +10,7 @@ public class Player extends Entity {
     int hp;
     int xp;
     int maxHp = 100;
+    int level;
 
     public Player(String entityType) {
         super(entityType);
@@ -77,7 +78,7 @@ public class Player extends Entity {
 
     public String generateLevelBar() {
         // Calculate current level
-        int level = (int) Math.sqrt(xp);
+        level = (int) Math.sqrt(xp);
 
         // XP thresholds for the current and next levels
         int xpForCurrentLevel = level * level;
