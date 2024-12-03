@@ -2,8 +2,19 @@ package cardSaga.cells;
 
 public class ExitCell extends Cell {
 
-    public ExitCell() {
+    boolean isLocked;
+
+    public ExitCell(boolean isLocked) {
         super();
-        this.val = 'o';
+        this.isLocked = isLocked;
+        this.val = (isLocked) ? '#' : 'o';
+    }
+
+    public void unlock() {
+        isLocked = true;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
     }
 }

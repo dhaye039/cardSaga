@@ -4,10 +4,14 @@ import java.util.*;
 public class Enemy extends Entity {
     List<Card> cards = new ArrayList<>();
     int gold;
+    boolean isBoss;
+    int bossLife;
 
-    public Enemy(String entityType, int gold) {
+    public Enemy(String entityType, int gold, boolean isBoss) {
         super(entityType);
         this.gold = gold;
+        this.isBoss = isBoss;
+        this.bossLife = 2;
         initCards();
     }
 

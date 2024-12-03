@@ -127,14 +127,7 @@ public class Fight {
 
             // Compare total damages
             if (pTotDmg > eTotDmg) { // player wins
-                String strUgdCard = "";
-
-                if (rand.nextInt(100) <= 20) {
-                    p.inventory.incnumUpgdCards();
-                    strUgdCard = "\tEnemy dropped an upgrade card!\n";
-                }
-
-                System.out.println("\tYou defeated the enemy and moved into their space!\n\tEnemy dropped " + e.gold + " gold.\n" + strUgdCard);
+                if (e.isBoss) --e.bossLife;
 
                 if (pCard.getTrait() instanceof EnemyWeaponTrait) 
                     apply(pCard, e);
@@ -151,10 +144,31 @@ public class Fight {
                     p.getCards().add(mirrorCard);
                 }
 
-                p.incXP(1);
-                p.inventory.addGold(e.gold);
+                if (!e.isBoss) {
+                    String strUgdCard = "";
+
+                    if (rand.nextInt(100) <= 20) {
+                        p.inventory.incnumUpgdCards();
+                        strUgdCard = "\tEnemy dropped an upgrade card!\n";
+                    }
+    
+                    System.out.println("\tEnemy dropped " + e.gold + " gold.\n" + strUgdCard);
+                    
+                    p.incXP(1);
+                    p.inventory.addGold(e.gold);
+                } else {
+                    if (e.bossLife == 0) {
+                        String strUgdCard = "";
+
+                        p.inventory.incnumUpgdCards();
+                        strUgdCard = "\tThe boss dropped an upgrade card!\n";
+                        System.out.println("\tBoss dropped " + e.gold + " gold.\n" + strUgdCard);
+                    }
+                }
+                
                 result = true;
             } else if (eTotDmg > pTotDmg) { // enemy wins
+                e.bossLife = 2;
                 System.out.println("\tYou lost the fight and stay in your current position.\n");
 
                 if (flags.useDodge) {

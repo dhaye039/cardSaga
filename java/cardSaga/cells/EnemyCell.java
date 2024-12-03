@@ -9,7 +9,7 @@ public class EnemyCell extends Cell {
     public EnemyCell(String enemyType) {
         super();
         this.val = 'e';
-        this.enemy = new Enemy(enemyType, 3);
+        this.enemy = new Enemy(enemyType, 3, false);
     }
 
     public Enemy getEnemy() {

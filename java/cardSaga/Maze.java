@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import cardSaga.cells.AnvilCell;
+import cardSaga.cells.BossCell;
 import cardSaga.cells.Cell;
 import cardSaga.cells.EnemyCell;
 import cardSaga.cells.EntranaceCell;
@@ -78,16 +79,21 @@ public class Maze {
             maze[0][0].setVal(PLAYER_ICON);
         }
 
-        // Place exit in random last column row
-        this.exitRow = random.nextInt(rows);
-        this.exitCol = cols - 1;
-        maze[exitRow][cols - 1] = new ExitCell();
-
         // Place special cells
         placeCell(new ShopCell());
 
         if (level > 1) 
             placeCell(new AnvilCell());
+
+        this.exitRow = random.nextInt(rows);
+        this.exitCol = cols - 1;
+
+        if (level % 5 == 0) {
+            maze[exitRow][exitCol] = new ExitCell(true);
+            placeCell(new BossCell("goblin"));
+        } else {
+            maze[exitRow][exitCol] = new ExitCell(false);
+        }
 
         return maze;
     }
@@ -100,7 +106,7 @@ public class Maze {
         Queue<int[]> queue = new LinkedList<>();
 
         // Start from the start position
-        queue.add(new int[] {exitRow, 0});
+        queue.add(new int[] {0, 0});
         visited[0][0] = true;
 
         // BFS directions for up, down, left, right
@@ -152,12 +158,24 @@ public class Maze {
         if (newRow >= 0 && newRow < maze.length && newCol >= 0 && newCol < maze[0].length) {
 
             // perform action
-            if (maze[newRow][newCol] instanceof EnemyCell) {
-                Enemy enemy = ((EnemyCell) maze[newRow][newCol]).getEnemy();
-                boolean playerWon = new Fight(p, enemy, turn).startFight(); // Start with turn = 0
+            if (maze[newRow][newCol] instanceof EnemyCell || maze[newRow][newCol] instanceof BossCell) {
+                boolean playerWon;
+                Enemy enemy = (maze[newRow][newCol] instanceof EnemyCell) 
+                    ? ((EnemyCell) maze[newRow][newCol]).getEnemy() 
+                    : ((BossCell) maze[newRow][newCol]).getEnemy();
+                if (enemy.isBoss) {
+                    playerWon = new Fight(p, enemy, turn).startFight();
+                    if (playerWon) {
+                        System.out.println("\tStarting second fight...");
+                        playerWon = new Fight(p, enemy, turn).startFight() && playerWon;
+                    }
+                } else {
+                    playerWon = new Fight(p, enemy, turn).startFight(); // Start with turn = 0
+                }
     
                 if (playerWon) {
-                    System.out.println("You defeated the enemy and moved into their space!\n");
+                    System.out.println("You defeated the boss! The exit is now unlocked\n");
+                    if (enemy.isBoss) ((ExitCell)maze[exitRow][exitCol]).unlock();
                 } else {
                     return false;
                 }
@@ -213,8 +231,13 @@ public class Maze {
                     maze[playerRow][playerCol].setVal('n');
                 else
                     maze[playerRow][playerCol].setVal('r');
-            } else if (maze[playerRow][playerCol] instanceof EntranaceCell || maze[playerRow][playerCol] instanceof ExitCell) {
+            } else if (maze[playerRow][playerCol] instanceof EntranaceCell) {
                 maze[playerRow][playerCol].setVal('o');
+            } else if (maze[playerRow][playerCol] instanceof ExitCell) {
+                if (((ExitCell) maze[playerRow][playerCol]).isLocked())
+                    maze[playerRow][playerCol].setVal('#');
+                else
+                    maze[playerRow][playerCol].setVal('o');
             } else if (maze[playerRow][playerCol] instanceof WallCell) {
                 maze[playerRow][playerCol].setVal(',');
             } else /* (maze[playerRow][playerCol] instanceof PathCell) */ {
@@ -302,12 +325,11 @@ public class Maze {
          || maze[cellRow][cellCol] instanceof ExitCell
          || maze[cellRow][cellCol] instanceof ShopCell
          || maze[cellRow][cellCol] instanceof AnvilCell
+         || maze[cellRow][cellCol] instanceof EnemyCell
+         || maze[cellRow][cellCol] instanceof BossCell
         );
 
-        if (cell instanceof ShopCell)
-            maze[cellRow][cellCol] = new ShopCell();
-        else if (cell instanceof AnvilCell)
-            maze[cellRow][cellCol] = new AnvilCell();
+        maze[cellRow][cellCol] = cell;
     }
 
     private void waiting(int millis) {
@@ -316,6 +338,10 @@ public class Maze {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isLocked() {
+        return ((ExitCell)maze[exitRow][exitCol]).isLocked();
     }
 
     // UI stuff

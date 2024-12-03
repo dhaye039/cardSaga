@@ -179,19 +179,21 @@ public class Main {
             if (maze.movePlayer(dir, turn)) {
                 if (maze.isAtExit()) {
                     // System.out.println("You've reached the exit\n");
-
-                    // check if player is on most recently generated maze
-                    if (level == (currMazeLvlIdx + 1)) {
-                        level++; currMazeLvlIdx++;
-                        generateLevel(p);
-                        mazeList.add(maze);
+                    if (maze.isLocked()) {
+                        System.out.println("The maze exit is locked. You must kill the boss to progress.\n");
                     } else {
-                        System.out.println("\nLevel " + (currMazeLvlIdx + 1) + " Map:\n");
-                        maze = mazeList.get(currMazeLvlIdx + 1);
-                        maze.setPlayerAtEntrance();
-                        currMazeLvlIdx++;
+                        // check if player is on most recently generated maze
+                        if (level == (currMazeLvlIdx + 1)) {
+                            level++; currMazeLvlIdx++;
+                            generateLevel(p);
+                            mazeList.add(maze);
+                        } else {
+                            System.out.println("\nLevel " + (currMazeLvlIdx + 1) + " Map:\n");
+                            maze = mazeList.get(currMazeLvlIdx + 1);
+                            maze.setPlayerAtEntrance();
+                            currMazeLvlIdx++;
+                        }
                     }
-                    // return;
                 } else if (maze.isAtEntrance()) {
                     System.out.println("\nLevel " + currMazeLvlIdx + " Map:\n");
                     maze = mazeList.get(currMazeLvlIdx - 1);
@@ -244,6 +246,7 @@ public class Main {
             X - wall
             , - broken wall path
             o - entrance/exit (exits always appear on the last column)
+            # - locked exit
             e - enemy
             b - boss
             s - shop
